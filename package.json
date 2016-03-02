@@ -36,9 +36,10 @@
   },
   "dependencies": {
     "ipfs-logger": "^0.1.0",
-    "peer-info": "^0.3.2",
-    "peer-id": "^0.3.3",
+    "mdns-txt": "^2.0.0",
     "multiaddr": "^1.0.0",
-    "multicast-dns": "^3.0.0"
+    "multicast-dns": "^3.0.0",
+    "peer-id": "^0.3.3",
+    "peer-info": "^0.3.2"
   }
 }
