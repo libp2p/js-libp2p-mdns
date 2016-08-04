@@ -29,18 +29,18 @@
   },
   "homepage": "https://github.com/diasdavid/js-libp2p-mdns-discovery",
   "devDependencies": {
-    "aegir": "^2.1.1",
+    "aegir": "^6.0.0",
     "chai": "^3.5.0",
-    "libp2p-swarm": "^0.5.0",
-    "libp2p-tcp": "^0.1.1",
+    "libp2p-swarm": "^0.22.2",
+    "libp2p-tcp": "^0.7.4",
     "pre-commit": "^1.1.2"
   },
   "dependencies": {
     "ipfs-logger": "^0.1.0",
-    "peer-info": "^0.3.2",
-    "peer-id": "^0.3.3",
-    "multiaddr": "^1.0.0",
-    "multicast-dns": "^3.0.0"
+    "peer-info": "^0.7.0",
+    "peer-id": "^0.7.0",
+    "multiaddr": "^2.0.2",
+    "multicast-dns": "^6.0.1"
   },
   "jsnext:main": "src/index.js"
 }
