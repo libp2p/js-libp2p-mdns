@@ -18,7 +18,7 @@ describe('MulticastDNS', () => {
   let pD
 
   before(function (done) {
-    this.timeout(40 * 1000)
+    this.timeout(80 * 1000)
     parallel([
       (cb) => {
         PeerInfo.create((err, peer) => {
