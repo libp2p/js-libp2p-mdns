@@ -55,8 +55,9 @@ module.exports = {
     answers.a.forEach((a) => {
       multiaddrs.push(new Multiaddr('/ip4/' + a.data + '/tcp/' + port))
     })
-
-    // TODO Create multiaddrs from AAAA (IPv6) records as well
+    answers.aaaa.forEach((a) => {
+      multiaddrs.push(new Multiaddr('/ip6/' + a.data + '/tcp/' + port))
+    })
 
     if (peerInfo.id.toB58String() === b58Id) {
       return // replied to myself, ignore

@@ -35,6 +35,7 @@ describe('MulticastDNS', () => {
 
           pB = peer
           pB.multiaddrs.add(multiaddr('/ip4/127.0.0.1/tcp/20002'))
+          pB.multiaddrs.add(multiaddr('/ip6/::1/tcp/20002'))
           cb()
         })
       },
@@ -117,6 +118,35 @@ describe('MulticastDNS', () => {
       })
 
       mdnsC.once('peer', (peerInfo) => {})
+    })
+  })
+
+  it('announces IP6 addresses', function (done) {
+    this.timeout(40 * 1000)
+
+    const options = {
+      port: 50001 // port must be the same
+    }
+    const mdnsA = new MulticastDNS(pA, {
+      broadcast: false, // do not talk to ourself
+      port: 50001
+    })
+    const mdnsB = new MulticastDNS(pB, options)
+
+    parallel([
+      (cb) => mdnsA.start(cb),
+      (cb) => mdnsB.start(cb)
+    ], () => {
+      mdnsA.once('peer', (peerInfo) => {
+        expect(pB.id.toB58String()).to.eql(peerInfo.id.toB58String())
+        expect(peerInfo.multiaddrs.size).to.equal(2);
+        parallel([
+          (cb) => mdnsA.stop(cb),
+          (cb) => mdnsB.stop(cb)
+        ], done)
+      })
+
+      mdnsB.once('peer', (peerInfo) => {})
     })
   })
 
