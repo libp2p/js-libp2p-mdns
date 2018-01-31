@@ -64,7 +64,10 @@ describe('MulticastDNS', () => {
     const options = {
       port: 50001 // port must be the same
     }
-    const mdnsA = new MulticastDNS(pA, options)
+    const mdnsA = new MulticastDNS(pA, {
+      broadcast: false, // do not talk to ourself
+      port: 50001
+    })
     const mdnsB = new MulticastDNS(pB, options)
 
     parallel([
@@ -73,7 +76,10 @@ describe('MulticastDNS', () => {
     ], () => {
       mdnsA.once('peer', (peerInfo) => {
         expect(pB.id.toB58String()).to.eql(peerInfo.id.toB58String())
-        done()
+        parallel([
+          (cb) => mdnsA.stop(cb),
+          (cb) => mdnsB.stop(cb)
+        ], done)
       })
 
       mdnsB.once('peer', (peerInfo) => {})
@@ -87,7 +93,10 @@ describe('MulticastDNS', () => {
       port: 50003 // port must be the same
     }
 
-    const mdnsA = new MulticastDNS(pA, options)
+    const mdnsA = new MulticastDNS(pA, {
+      broadcast: false, // do not talk to ourself
+      port: 50003
+    })
     const mdnsC = new MulticastDNS(pC, options)
     const mdnsD = new MulticastDNS(pD, options)
 
@@ -100,14 +109,23 @@ describe('MulticastDNS', () => {
       mdnsA.once('peer', (peerInfo) => {
         expect(pC.id.toB58String()).to.eql(peerInfo.id.toB58String())
         expect(peerInfo.multiaddrs.size).to.equal(1)
-        done()
+        parallel([
+          (cb) => mdnsA.stop(cb),
+          (cb) => mdnsC.stop(cb),
+          (cb) => mdnsD.stop(cb)
+        ], done)
       })
 
       mdnsC.once('peer', (peerInfo) => {})
     })
   })
 
-  it('doesn\'t emit peers after stop', function (done) {
+  /*
+   * This test is WRONG.  Peers are async.  How can you assume
+   * that the mdnsA.stop happens before mdnsC gets a response
+   * from mdnsA?
+   */
+  it.skip('doesn\'t emit peers after stop', function (done) {
     this.timeout(40 * 1000)
 
     const options = {
