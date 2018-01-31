@@ -139,7 +139,7 @@ describe('MulticastDNS', () => {
     ], () => {
       mdnsA.once('peer', (peerInfo) => {
         expect(pB.id.toB58String()).to.eql(peerInfo.id.toB58String())
-        expect(peerInfo.multiaddrs.size).to.equal(2);
+        expect(peerInfo.multiaddrs.size).to.equal(2)
         parallel([
           (cb) => mdnsA.stop(cb),
           (cb) => mdnsB.stop(cb)
