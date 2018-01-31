@@ -13,6 +13,7 @@ module.exports = {
 
   queryLAN: function (mdns, serviceTag, interval) {
     return setInterval(() => {
+      log('query', serviceTag)
       mdns.query({
         questions: [{
           name: serviceTag,
@@ -142,6 +143,7 @@ module.exports = {
         }
       })
 
+      log('responding to query')
       mdns.respond(answers)
     }
   }
