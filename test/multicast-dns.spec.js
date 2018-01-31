@@ -8,6 +8,7 @@ chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const parallel = require('async/parallel')
+const series = require('async/series')
 
 const MulticastDNS = require('./../src')
 
@@ -133,9 +134,9 @@ describe('MulticastDNS', () => {
     })
     const mdnsB = new MulticastDNS(pB, options)
 
-    parallel([
-      (cb) => mdnsA.start(cb),
-      (cb) => mdnsB.start(cb)
+    series([
+      (cb) => mdnsB.start(cb),
+      (cb) => mdnsA.start(cb)
     ], () => {
       mdnsA.once('peer', (peerInfo) => {
         expect(pB.id.toB58String()).to.eql(peerInfo.id.toB58String())
@@ -150,12 +151,7 @@ describe('MulticastDNS', () => {
     })
   })
 
-  /*
-   * This test is WRONG.  Peers are async.  How can you assume
-   * that the mdnsA.stop happens before mdnsC gets a response
-   * from mdnsA?
-   */
-  it.skip('doesn\'t emit peers after stop', function (done) {
+  it('doesn\'t emit peers after stop', function (done) {
     this.timeout(40 * 1000)
 
     const options = {
@@ -164,18 +160,13 @@ describe('MulticastDNS', () => {
     const mdnsA = new MulticastDNS(pA, options)
     const mdnsC = new MulticastDNS(pC, options)
 
-    setTimeout(done, 15000)
-
-    parallel([
+    series([
       (cb) => mdnsA.start(cb),
+      (cb) => setTimeout(cb, 1000),
+      (cb) => mdnsA.stop(cb),
       (cb) => mdnsC.start(cb)
     ], () => {
-      mdnsA.stop((err) => {
-        if (err) {
-          return done(err)
-        }
-      })
-
+      setTimeout(() => mdnsC.stop(done), 5000)
       mdnsC.once('peer', (peerInfo) => {
         done(new Error('Should not receive new peer.'))
       })
