@@ -7,10 +7,18 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
+const PeerId = require('peer-id')
 const parallel = require('async/parallel')
 const series = require('async/series')
 
 const MulticastDNS = require('./../src')
+
+function createPeer (callback) {
+  PeerId.create({ bits: 512}, (err, id) => {
+    if (err) throw err
+    PeerInfo.create(id, callback)
+  })
+}
 
 describe('MulticastDNS', () => {
   let pA
@@ -19,10 +27,9 @@ describe('MulticastDNS', () => {
   let pD
 
   before(function (done) {
-    this.timeout(80 * 1000)
     parallel([
       (cb) => {
-        PeerInfo.create((err, peer) => {
+        createPeer((err, peer) => {
           expect(err).to.not.exist()
 
           pA = peer
@@ -31,7 +38,7 @@ describe('MulticastDNS', () => {
         })
       },
       (cb) => {
-        PeerInfo.create((err, peer) => {
+        createPeer((err, peer) => {
           expect(err).to.not.exist()
 
           pB = peer
@@ -41,7 +48,7 @@ describe('MulticastDNS', () => {
         })
       },
       (cb) => {
-        PeerInfo.create((err, peer) => {
+        createPeer((err, peer) => {
           expect(err).to.not.exist()
           pC = peer
           pC.multiaddrs.add(multiaddr('/ip4/127.0.0.1/tcp/20003'))
@@ -50,7 +57,7 @@ describe('MulticastDNS', () => {
         })
       },
       (cb) => {
-        PeerInfo.create((err, peer) => {
+        createPeer((err, peer) => {
           if (err) { cb(err) }
           pD = peer
           pD.multiaddrs.add(multiaddr('/ip4/127.0.0.1/tcp/30003/ws'))
