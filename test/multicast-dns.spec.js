@@ -14,7 +14,7 @@ const series = require('async/series')
 const MulticastDNS = require('./../src')
 
 function createPeer (callback) {
-  PeerId.create({ bits: 512}, (err, id) => {
+  PeerId.create({ bits: 512 }, (err, id) => {
     if (err) throw err
     PeerInfo.create(id, callback)
   })
