@@ -22,12 +22,12 @@ const mdns = new MDNS(peerInfo, options)
 mdns.on('peer', (peerInfo) => {
   console.log('Found a peer in the local network', peerInfo.id.toB58String())
 })
+process.on('exit', mdns.stop)
 
-// Broadcast for 20 seconds
-mdns.start(() => setTimeout(() => mdns.stop(() => {}), 20 * 1000))
+// Listen for peers
+mdns.start()
 ```
 
 - options
   - `broadcast` - (true/false) announce our presence through mDNS, default false
-  - `interval` - query interval, default 10 * 1000 (10 seconds)
   - `serviceTag` - name of the service announcedm, default 'ipfs.local`
