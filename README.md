@@ -29,5 +29,5 @@ mdns.start()
 ```
 
 - options
-  - `broadcast` - (true/false) announce our presence through mDNS, default false
+  - `broadcast` - (true/false) announce our presence through mDNS, default true
   - `serviceTag` - name of the service announcedm, default 'ipfs.local`
