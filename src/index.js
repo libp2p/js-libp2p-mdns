@@ -24,7 +24,10 @@ class MulticastDNS extends EventEmitter {
     this.mdns = mdns
 
     mdns.on('response', (event) => {
-      query.gotResponse(event, this.peerInfo, this.serviceTag, (err, foundPeer) => {
+      if (!self.mdns) {
+        return;
+      }
+      query.gotResponse(event, self.peerInfo, self.serviceTag, (err, foundPeer) => {
         if (err) {
           return log('Error processing peer response', err)
         }
@@ -34,7 +37,10 @@ class MulticastDNS extends EventEmitter {
     })
 
     mdns.on('query', (event) => {
-      query.gotQuery(event, this.mdns, this.peerInfo, this.serviceTag, this.broadcast)
+      if (!self.mdns) {
+        return;
+      }
+      query.gotQuery(event, self.mdns, self.peerInfo, self.serviceTag, self.broadcast)
     })
 
     query.queryLAN(this.mdns, this.serviceTag)
@@ -42,12 +48,12 @@ class MulticastDNS extends EventEmitter {
   }
 
   stop (callback) {
-    if (!this.mdns) {
-      callback(new Error('MulticastDNS service had not started yet'))
-    } else {
-      this.mdns.destroy(callback)
-      this.mdns = undefined
+    const mdns = this.mdns
+    if (!mdns) {
+      return callback(new Error('MulticastDNS service had not started yet'))
     }
+    this.mdns = undefined
+    mdns.destroy(callback)
   }
 }
 
