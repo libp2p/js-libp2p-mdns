@@ -25,7 +25,7 @@ class MulticastDNS extends EventEmitter {
 
     mdns.on('response', (event) => {
       if (!self.mdns) {
-        return;
+        return
       }
       query.gotResponse(event, self.peerInfo, self.serviceTag, (err, foundPeer) => {
         if (err) {
@@ -38,7 +38,7 @@ class MulticastDNS extends EventEmitter {
 
     mdns.on('query', (event) => {
       if (!self.mdns) {
-        return;
+        return
       }
       query.gotQuery(event, self.mdns, self.peerInfo, self.serviceTag, self.broadcast)
     })
