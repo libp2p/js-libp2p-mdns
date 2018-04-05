@@ -12,19 +12,13 @@ const tcp = new TCP()
 module.exports = {
 
   queryLAN: function (mdns, serviceTag, interval) {
-    const query = () => {
-      log('query', serviceTag)
-      mdns.query({
-        questions: [{
-          name: serviceTag,
-          type: 'PTR'
-        }]
-      })
-    }
-
-    // Immediately start a query, then do it every interval.
-    query()
-    return setInterval(query, interval)
+    log('query', serviceTag)
+    mdns.query({
+      questions: [{
+        name: serviceTag,
+        type: 'PTR'
+      }]
+    })
   },
 
   gotResponse: function (rsp, peerInfo, serviceTag, callback) {

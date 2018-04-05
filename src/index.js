@@ -12,11 +12,9 @@ class MulticastDNS extends EventEmitter {
     options = options || {}
 
     this.broadcast = options.broadcast !== false
-    this.interval = options.interval || (1e3 * 10)
     this.serviceTag = options.serviceTag || 'ipfs.local'
     this.port = options.port || 5353
     this.peerInfo = peerInfo
-    this._queryInterval = null
   }
 
   start (callback) {
@@ -25,10 +23,11 @@ class MulticastDNS extends EventEmitter {
 
     this.mdns = mdns
 
-    this._queryInterval = query.queryLAN(this.mdns, this.serviceTag, this.interval)
-
     mdns.on('response', (event) => {
-      query.gotResponse(event, this.peerInfo, this.serviceTag, (err, foundPeer) => {
+      if (!self.mdns) {
+        return
+      }
+      query.gotResponse(event, self.peerInfo, self.serviceTag, (err, foundPeer) => {
         if (err) {
           return log('Error processing peer response', err)
         }
@@ -38,21 +37,23 @@ class MulticastDNS extends EventEmitter {
     })
 
     mdns.on('query', (event) => {
-      query.gotQuery(event, this.mdns, this.peerInfo, this.serviceTag, this.broadcast)
+      if (!self.mdns) {
+        return
+      }
+      query.gotQuery(event, self.mdns, self.peerInfo, self.serviceTag, self.broadcast)
     })
 
-    setImmediate(() => callback())
+    query.queryLAN(this.mdns, this.serviceTag)
+    setImmediate(callback)
   }
 
   stop (callback) {
-    if (!this.mdns) {
-      callback(new Error('MulticastDNS service had not started yet'))
-    } else {
-      clearInterval(this._queryInterval)
-      this._queryInterval = null
-      this.mdns.destroy(callback)
-      this.mdns = undefined
+    const mdns = this.mdns
+    if (!mdns) {
+      return callback(new Error('MulticastDNS service had not started yet'))
     }
+    this.mdns = undefined
+    mdns.destroy(callback)
   }
 }
 
