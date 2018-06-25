@@ -2,6 +2,7 @@
   "name": "libp2p-mdns",
   "version": "0.12.0",
   "description": "Node.js libp2p mDNS discovery implementation for peer discovery",
+  "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
   "scripts": {
     "lint": "aegir lint",
@@ -23,7 +24,6 @@
   "keywords": [
     "IPFS"
   ],
-  "author": "David Dias <daviddias@ipfs.io>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/libp2p/js-libp2p-mdns/issues"
