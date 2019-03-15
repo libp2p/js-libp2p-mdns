@@ -6,8 +6,6 @@ const debug = require('debug')
 const log = debug('libp2p:mdns')
 const Multiaddr = require('multiaddr')
 const Id = require('peer-id')
-const TCP = require('libp2p-tcp')
-const tcp = new TCP()
 
 module.exports = {
 
@@ -27,7 +25,7 @@ module.exports = {
     return setInterval(query, interval)
   },
 
-  gotResponse: function (rsp, peerInfo, serviceTag, callback) {
+  gotResponse: async function (rsp, peerInfo, serviceTag) {
     if (!rsp.answers) { return }
 
     const answers = {
@@ -72,23 +70,21 @@ module.exports = {
 
     const peerId = Id.createFromB58String(b58Id)
 
-    Peer.create(peerId, (err, peerFound) => {
-      if (err) {
-        return log('Error creating PeerInfo from new found peer', err)
-      }
-
+    try {
+      const peerFound = await Peer.create(peerId)
       multiaddrs.forEach((addr) => peerFound.multiaddrs.add(addr))
-
-      callback(null, peerFound)
-    })
+      return peerFound
+    } catch (err) {
+      log('Error creating PeerInfo from new found peer', err)
+    }
   },
 
   gotQuery: function (qry, mdns, peerInfo, serviceTag, broadcast) {
     if (!broadcast) { return }
 
-    const multiaddrs = tcp.filter(peerInfo.multiaddrs.toArray())
+    const addresses = peerInfo.multiaddrs.toArray().map(ma => ma.toOptions())
     // Only announce TCP for now
-    if (multiaddrs.length === 0) { return }
+    if (addresses.length === 0) { return }
 
     if (qry.questions[0] && qry.questions[0].name === serviceTag) {
       const answers = []
@@ -102,7 +98,7 @@ module.exports = {
       })
 
       // Only announce TCP multiaddrs for now
-      const port = multiaddrs[0].toString().split('/')[4]
+      const port = addresses[0].port
 
       answers.push({
         name: peerInfo.id.toB58String() + '.' + serviceTag,
@@ -125,24 +121,24 @@ module.exports = {
         data: peerInfo.id.toB58String()
       })
 
-      multiaddrs.forEach((ma) => {
-        if (ma.protoNames()[0] === 'ip4') {
+      addresses.forEach((addr) => {
+        if (addr.family === 'ipv4') {
           answers.push({
             name: os.hostname(),
             type: 'A',
             class: 'IN',
             ttl: 120,
-            data: ma.toString().split('/')[2]
+            data: addr.host
           })
           return
         }
-        if (ma.protoNames()[0] === 'ip6') {
+        if (addr.family === 'ipv6') {
           answers.push({
             name: os.hostname(),
             type: 'AAAA',
             class: 'IN',
             ttl: 120,
-            data: ma.toString().split('/')[2]
+            data: addr.host
           })
         }
       })
