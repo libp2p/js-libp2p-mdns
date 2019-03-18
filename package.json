@@ -4,6 +4,10 @@
   "description": "Node.js libp2p mDNS discovery implementation for peer discovery",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "lint": "aegir lint",
     "coverage": "aegir coverage",
@@ -15,8 +19,7 @@
     "coverage-publish": "aegir coverage publish"
   },
   "pre-push": [
-    "lint",
-    "test"
+    "lint"
   ],
   "repository": {
     "type": "git",
