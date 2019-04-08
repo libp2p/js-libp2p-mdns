@@ -3,9 +3,12 @@
 const multicastDNS = require('multicast-dns')
 const EventEmitter = require('events').EventEmitter
 const assert = require('assert')
+const setImmediate = require('async/setImmediate')
+const parallel = require('async/parallel')
 const debug = require('debug')
 const log = debug('libp2p:mdns')
 const query = require('./query')
+const GoMulticastDNS = require('./compat')
 
 class MulticastDNS extends EventEmitter {
   constructor (options) {
@@ -18,6 +21,10 @@ class MulticastDNS extends EventEmitter {
     this.port = options.port || 5353
     this.peerInfo = options.peerInfo
     this._queryInterval = null
+
+    if (options.compat !== false) {
+      this._goMdns = new GoMulticastDNS(options.peerInfo)
+    }
   }
 
   start (callback) {
@@ -42,15 +49,27 @@ class MulticastDNS extends EventEmitter {
       query.gotQuery(event, this.mdns, this.peerInfo, this.serviceTag, this.broadcast)
     })
 
-    setImmediate(() => callback())
+    if (this._goMdns) {
+      this._goMdns.start(callback)
+    } else {
+      setImmediate(() => callback())
+    }
   }
 
   stop (callback) {
     if (!this.mdns) {
-      callback(new Error('MulticastDNS service had not started yet'))
+      return callback(new Error('MulticastDNS service had not started yet'))
+    }
+
+    clearInterval(this._queryInterval)
+    this._queryInterval = null
+
+    if (this._goMdns) {
+      parallel([
+        cb => this._goMdns.stop(cb),
+        cb => this.mdns.destroy(cb)
+      ], callback)
     } else {
-      clearInterval(this._queryInterval)
-      this._queryInterval = null
       this.mdns.destroy(callback)
       this.mdns = undefined
     }
