@@ -85,7 +85,7 @@ class Responder {
     })
 
     log('responding to query', answers)
-    this._mdns.respond(answers)
+    this._mdns.respond(answers, info)
   }
 
   stop (callback) {
