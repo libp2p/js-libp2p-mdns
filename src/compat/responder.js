@@ -5,8 +5,10 @@ const assert = require('assert')
 const MDNS = require('multicast-dns')
 const log = require('debug')('libp2p:mdns:compat:responder')
 const TCP = require('libp2p-tcp')
-const tcp = new TCP()
+const nextTick = require('async/nextTick')
 const { SERVICE_TAG_LOCAL } = require('./constants')
+
+const tcp = new TCP()
 
 class Responder {
   constructor (peerInfo) {
@@ -19,7 +21,7 @@ class Responder {
   start (callback) {
     this._mdns = MDNS()
     this._mdns.on('query', this._onQuery)
-    setImmediate(() => callback())
+    nextTick(() => callback())
   }
 
   _onQuery (event, info) {
@@ -66,7 +68,7 @@ class Responder {
       type: 'TXT',
       class: 'IN',
       ttl: 120,
-      data: this._peerIdStr
+      data: [Buffer.from(this._peerIdStr)]
     })
 
     multiaddrs.forEach((ma) => {
@@ -87,6 +89,7 @@ class Responder {
   }
 
   stop (callback) {
+    this._mdns.removeListener('query', this._onQuery)
     this._mdns.destroy(callback)
   }
 }

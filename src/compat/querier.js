@@ -6,6 +6,7 @@ const MDNS = require('multicast-dns')
 const Multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
+const nextTick = require('async/nextTick')
 const log = require('debug')('libp2p:mdns:compat:querier')
 const { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } = require('./constants')
 
@@ -22,11 +23,11 @@ class Querier extends EE {
   start (callback) {
     this._handle = periodically(() => {
       // Create a querier that queries multicast but gets responses unicast
-      const querier = MDNS({ multicast: false, interface: '0.0.0.0', port: 0 })
+      const mdns = MDNS({ multicast: false, interface: '0.0.0.0', port: 0 })
 
-      querier.on('response', this._onResponse)
+      mdns.on('response', this._onResponse)
 
-      querier.query({
+      mdns.query({
         id: nextId(), // id > 0 for unicast response
         questions: [{ name: SERVICE_TAG_LOCAL, type: 'PTR', class: 'IN' }]
       }, null, {
@@ -34,10 +35,15 @@ class Querier extends EE {
         port: MULTICAST_PORT
       })
 
-      return { stop: callback => querier.destroy(callback) }
+      return {
+        stop: callback => {
+          mdns.removeListener('response', this._onResponse)
+          mdns.destroy(callback)
+        }
+      }
     }, this._options.queryPeriod)
 
-    setImmediate(() => callback())
+    nextTick(() => callback())
   }
 
   _onResponse (event, info) {
@@ -59,7 +65,9 @@ class Querier extends EE {
       return log('failed to extract peer ID from TXT record data', txtRecord, err)
     }
 
-    if (this._peerIdStr === peerIdStr) return // replied to myself, ignore
+    if (this._peerIdStr === peerIdStr) {
+      return log('ignoring reply to myself')
+    }
 
     let peerId
     try {
