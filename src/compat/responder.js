@@ -29,7 +29,7 @@ class Responder {
 
     const questions = event.questions || []
 
-    // Only respond to queires for our service tag
+    // Only respond to queries for our service tag
     if (!questions.some(q => q.name === SERVICE_TAG_LOCAL)) return
 
     log('got query', event, info)
