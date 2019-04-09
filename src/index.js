@@ -21,7 +21,6 @@ class MulticastDNS extends EventEmitter {
     this.port = options.port || 5353
     this.peerInfo = options.peerInfo
     this._queryInterval = null
-    this._onPeer = this._onPeer.bind(this)
 
     if (options.compat !== false) {
       this._goMdns = new GoMulticastDNS(options.peerInfo)
@@ -29,6 +28,7 @@ class MulticastDNS extends EventEmitter {
   }
 
   start (callback) {
+    const self = this
     const mdns = multicastDNS({ port: this.port })
 
     this.mdns = mdns
@@ -41,7 +41,7 @@ class MulticastDNS extends EventEmitter {
           return log('Error processing peer response', err)
         }
 
-        this._onPeer(foundPeer)
+        self.emit('peer', foundPeer)
       })
     })
 
@@ -54,10 +54,6 @@ class MulticastDNS extends EventEmitter {
     } else {
       setImmediate(() => callback())
     }
-  }
-
-  _onPeer (peerInfo) {
-    this.emit('peer', peerInfo)
   }
 
   stop (callback) {
