@@ -17,7 +17,7 @@ class GoMulticastDNS {
     assert(peerInfo, 'missing peerInfo parameter')
     this._peerInfo = peerInfo
     this._peerIdStr = peerInfo.id.toB58String()
-    this._options = options
+    this._options = options || {}
     this._onTick = this._onTick.bind(this)
   }
 
