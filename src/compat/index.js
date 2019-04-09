@@ -11,9 +11,8 @@ class GoMulticastDNS extends EE {
   constructor (peerInfo) {
     super()
     this._started = false
-    this._responder = new Responder(peerInfo)
-    this._querier = new Querier(peerInfo.id)
-    this._querier.on('peer', peerInfo => this.emit('peer', peerInfo))
+    this._peerInfo = peerInfo
+    this._onPeer = this._onPeer.bind(this)
   }
 
   start (callback) {
@@ -22,6 +21,10 @@ class GoMulticastDNS extends EE {
     }
 
     this._started = true
+    this._responder = new Responder(this._peerInfo)
+    this._querier = new Querier(this._peerInfo.id)
+
+    this._querier.on('peer', this._onPeer)
 
     parallel([
       cb => this._responder.start(cb),
@@ -29,16 +32,27 @@ class GoMulticastDNS extends EE {
     ], callback)
   }
 
+  _onPeer (peerInfo) {
+    this.emit('peer', peerInfo)
+  }
+
   stop (callback) {
     if (!this._started) {
       return callback(new Error('MulticastDNS service is not started'))
     }
 
+    const responder = this._responder
+    const querier = this._querier
+
     this._started = false
+    this._responder = null
+    this._querier = null
+
+    querier.removeListener('peer', this._onPeer)
 
     parallel([
-      cb => this._responder.stop(cb),
-      cb => this._querier.stop(cb)
+      cb => responder.stop(cb),
+      cb => querier.stop(cb)
     ], callback)
   }
 }
