@@ -25,7 +25,6 @@ class MulticastDNS extends EventEmitter {
 
     if (options.compat !== false) {
       this._goMdns = new GoMulticastDNS(options.peerInfo)
-      this._goMdns.on('peer', this._onPeer)
     }
   }
 
@@ -70,7 +69,6 @@ class MulticastDNS extends EventEmitter {
     this._queryInterval = null
 
     if (this._goMdns) {
-      this._goMdns.removeListener('peer', this._onPeer)
       parallel([
         cb => this._goMdns.stop(cb),
         cb => this.mdns.destroy(cb)

@@ -1,59 +1,92 @@
 'use strict'
 
-// Compatibility with Go libp2p MDNS
+const OS = require('os')
+const assert = require('assert')
+const MDNS = require('multicast-dns')
+const TCP = require('libp2p-tcp')
+const nextTick = require('async/nextTick')
+const { SERVICE_TAG_LOCAL } = require('./constants')
 
-const EE = require('events')
-const parallel = require('async/parallel')
-const Responder = require('./responder')
-const Querier = require('./querier')
+const tcp = new TCP()
 
-class GoMulticastDNS extends EE {
-  constructor (peerInfo) {
-    super()
-    this._started = false
+// Simply advertise ourselves every 10 seconds with a go-libp2p-mdns compatible
+// MDNS response. We can't discover go-libp2p nodes but they'll discover and
+// connect to us.
+class GoMulticastDNS {
+  constructor (peerInfo, options) {
+    assert(peerInfo, 'missing peerInfo parameter')
     this._peerInfo = peerInfo
-    this._onPeer = this._onPeer.bind(this)
+    this._peerIdStr = peerInfo.id.toB58String()
+    this._options = options
+    this._onTick = this._onTick.bind(this)
   }
 
   start (callback) {
-    if (this._started) {
-      return callback(new Error('MulticastDNS service is already started'))
-    }
-
-    this._started = true
-    this._responder = new Responder(this._peerInfo)
-    this._querier = new Querier(this._peerInfo.id)
-
-    this._querier.on('peer', this._onPeer)
-
-    parallel([
-      cb => this._responder.start(cb),
-      cb => this._querier.start(cb)
-    ], callback)
+    this._mdns = MDNS()
+    this._intervalId = setInterval(this._onTick, this._options.interval || 10000)
+    nextTick(() => callback())
   }
 
-  _onPeer (peerInfo) {
-    this.emit('peer', peerInfo)
+  _onTick () {
+    const multiaddrs = tcp.filter(this._peerInfo.multiaddrs.toArray())
+    // Only announce TCP for now
+    if (!multiaddrs.length) return
+
+    const answers = []
+    const peerServiceTagLocal = `${this._peerIdStr}.${SERVICE_TAG_LOCAL}`
+
+    answers.push({
+      name: SERVICE_TAG_LOCAL,
+      type: 'PTR',
+      class: 'IN',
+      ttl: 120,
+      data: peerServiceTagLocal
+    })
+
+    // Only announce TCP multiaddrs for now
+    const port = multiaddrs[0].toString().split('/')[4]
+
+    answers.push({
+      name: peerServiceTagLocal,
+      type: 'SRV',
+      class: 'IN',
+      ttl: 120,
+      data: {
+        priority: 10,
+        weight: 1,
+        port,
+        target: OS.hostname()
+      }
+    })
+
+    answers.push({
+      name: peerServiceTagLocal,
+      type: 'TXT',
+      class: 'IN',
+      ttl: 120,
+      data: [Buffer.from(this._peerIdStr)]
+    })
+
+    multiaddrs.forEach((ma) => {
+      const proto = ma.protoNames()[0]
+      if (proto === 'ip4' || proto === 'ip6') {
+        answers.push({
+          name: OS.hostname(),
+          type: proto === 'ip4' ? 'A' : 'AAAA',
+          class: 'IN',
+          ttl: 120,
+          data: ma.toString().split('/')[2]
+        })
+      }
+    })
+
+    this._mdns.respond(answers)
   }
 
   stop (callback) {
-    if (!this._started) {
-      return callback(new Error('MulticastDNS service is not started'))
-    }
-
-    const responder = this._responder
-    const querier = this._querier
-
-    this._started = false
-    this._responder = null
-    this._querier = null
-
-    querier.removeListener('peer', this._onPeer)
-
-    parallel([
-      cb => responder.stop(cb),
-      cb => querier.stop(cb)
-    ], callback)
+    clearInterval(this._intervalId)
+    this._mdns.removeListener('query', this._onQuery)
+    this._mdns.destroy(callback)
   }
 }
 
