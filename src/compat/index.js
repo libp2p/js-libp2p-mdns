@@ -91,3 +91,4 @@ class GoMulticastDNS {
 }
 
 module.exports = GoMulticastDNS
+module.exports.tag = 'mdns'
