@@ -24,7 +24,10 @@ class MulticastDNS extends EventEmitter {
     this._onPeer = this._onPeer.bind(this)
 
     if (options.compat !== false) {
-      this._goMdns = new GoMulticastDNS(options.peerInfo)
+      this._goMdns = new GoMulticastDNS(options.peerInfo, {
+        queryPeriod: options.compatQueryPeriod,
+        queryInterval: options.compatQueryInerval
+      })
       this._goMdns.on('peer', this._onPeer)
     }
   }

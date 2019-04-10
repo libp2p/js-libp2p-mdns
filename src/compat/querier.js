@@ -14,9 +14,13 @@ class Querier extends EE {
   constructor (peerId, options) {
     super()
     assert(peerId, 'missing peerId parameter')
+    options = options || {}
     this._peerIdStr = peerId.toB58String()
-    this._options = options || {}
-    this._options.queryPeriod = this._options.queryPeriod || 5000
+    // Time for which the MDNS server will stay alive waiting for responses
+    options.queryPeriod = options.queryPeriod || 5000
+    // Re-query every 60s, in leu of network change detection
+    options.queryInterval = options.queryInterval || 60000
+    this._options = options
     this._onResponse = this._onResponse.bind(this)
   }
 
@@ -41,7 +45,10 @@ class Querier extends EE {
           mdns.destroy(callback)
         }
       }
-    }, this._options.queryPeriod)
+    }, {
+      period: this._options.queryPeriod,
+      interval: this._options.queryInterval
+    })
 
     nextTick(() => callback())
   }
@@ -112,16 +119,23 @@ class Querier extends EE {
 
 module.exports = Querier
 
-function periodically (run, period) {
+/**
+ * Run `fn` for a certain period of time, and then wait for an interval before
+ * running it again. `fn` must return an object with a stop function, which is
+ * called when the period expires.
+ */
+function periodically (fn, { period, interval }) {
   let handle, timeoutId
   let stopped = false
 
   const reRun = () => {
-    handle = run()
+    handle = fn()
     timeoutId = setTimeout(() => {
       handle.stop(err => {
         if (err) log(err)
-        if (!stopped) reRun()
+        if (!stopped) {
+          timeoutId = setTimeout(reRun, interval)
+        }
       })
       handle = null
     }, period)
@@ -143,7 +157,7 @@ function periodically (run, period) {
 }
 
 const nextId = (() => {
-  let id = 1
+  let id = 0
   return () => {
     id++
     if (id === Number.MAX_SAFE_INTEGER) id = 1
