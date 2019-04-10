@@ -3,7 +3,7 @@
 const multicastDNS = require('multicast-dns')
 const EventEmitter = require('events').EventEmitter
 const assert = require('assert')
-const setImmediate = require('async/setImmediate')
+const nextTick = require('async/nextTick')
 const parallel = require('async/parallel')
 const debug = require('debug')
 const log = debug('libp2p:mdns')
@@ -56,7 +56,7 @@ class MulticastDNS extends EventEmitter {
     if (this._goMdns) {
       this._goMdns.start(callback)
     } else {
-      setImmediate(() => callback())
+      nextTick(() => callback())
     }
   }
 
