@@ -123,8 +123,14 @@ module.exports = Querier
  * Run `fn` for a certain period of time, and then wait for an interval before
  * running it again. `fn` must return an object with a stop function, which is
  * called when the period expires.
+ *
+ * @param {Function} fn function to run
+ * @param {Object} [options]
+ * @param {Object} [options.period] Period in ms to run the function for
+ * @param {Object} [options.interval] Interval in ms between runs
+ * @returns {Object} handle that can be used to stop execution
  */
-function periodically (fn, { period, interval }) {
+function periodically (fn, options) {
   let handle, timeoutId
   let stopped = false
 
@@ -134,11 +140,11 @@ function periodically (fn, { period, interval }) {
       handle.stop(err => {
         if (err) log(err)
         if (!stopped) {
-          timeoutId = setTimeout(reRun, interval)
+          timeoutId = setTimeout(reRun, options.interval)
         }
       })
       handle = null
-    }, period)
+    }, options.period)
   }
 
   reRun()
