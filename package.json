@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "lint": "aegir lint",
-    "coverage": "nyc npm run test:node",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test:node",
     "test": "aegir test -t node",
     "test:node": "aegir test -t node",
     "release": "aegir release -t node --no-build",
