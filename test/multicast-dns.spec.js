@@ -193,4 +193,16 @@ describe('MulticastDNS', () => {
       })
     })
   })
+
+  it('should start and stop with go-libp2p-mdns compat', done => {
+    const mdns = new MulticastDNS({ peerInfo: pA, port: 50004 })
+
+    mdns.start(err => {
+      expect(err).to.not.exist()
+      mdns.stop(err => {
+        expect(err).to.not.exist()
+        done()
+      })
+    })
+  })
 })
