@@ -76,7 +76,7 @@ describe('Querier', () => {
       // Should have queried at least twice by now!
       expect(queryCount >= 2).to.be.true()
       done()
-    }, 20)
+    }, 100)
   })
 
   it('should not emit peer for responses with non matching service tags', done => {
