@@ -14,7 +14,7 @@ const OS = require('os')
 const Querier = require('../../src/compat/querier')
 const { SERVICE_TAG_LOCAL } = require('../../src/compat/constants')
 
-describe.only('Querier', () => {
+describe('Querier', () => {
   let querier, mdns
   const peerAddrs = [
     '/ip4/127.0.0.1/tcp/20001',
