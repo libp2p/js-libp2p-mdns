@@ -15,8 +15,8 @@ const tcp = new TCP()
  */
 class Responder {
   /**
-   * 
-   * @param {object} peerInfo 
+   *
+   * @param {object} peerInfo
    */
   constructor (peerInfo) {
     assert(peerInfo, 'missing peerInfo parameter')

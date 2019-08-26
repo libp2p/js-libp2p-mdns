@@ -12,8 +12,8 @@ const Querier = require('./querier')
  */
 class GoMulticastDNS extends EE {
   /**
-   * 
-   * @param {object} peerInfo 
+   *
+   * @param {object} peerInfo
    */
   constructor (peerInfo) {
     super()
@@ -22,8 +22,9 @@ class GoMulticastDNS extends EE {
     this._onPeer = this._onPeer.bind(this)
   }
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
+   * @returns {functio}
    */
   start (callback) {
     if (this._started) {
@@ -42,15 +43,16 @@ class GoMulticastDNS extends EE {
     ], callback)
   }
   /**
-   * 
-   * @param {object} peerInfo 
+   *
+   * @param {object} peerInfo
    */
   _onPeer (peerInfo) {
     this.emit('peer', peerInfo)
   }
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
+   * @returns {?object}
    */
   stop (callback) {
     if (!this._started) {

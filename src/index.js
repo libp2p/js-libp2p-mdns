@@ -15,8 +15,8 @@ const GoMulticastDNS = require('./compat')
  */
 class MulticastDNS extends EventEmitter {
   /**
-   * 
-   * @param {object} options 
+   *
+   * @param {object} options
    */
   constructor (options) {
     super()
@@ -39,8 +39,8 @@ class MulticastDNS extends EventEmitter {
     }
   }
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
    */
   start (callback) {
     const mdns = multicastDNS({ port: this.port })
@@ -70,15 +70,16 @@ class MulticastDNS extends EventEmitter {
     }
   }
   /**
-   * 
-   * @param {object} peerInfo 
+   *
+   * @param {object} peerInfo
    */
   _onPeer (peerInfo) {
     this.emit('peer', peerInfo)
   }
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
+   * @returns {function}
    */
   stop (callback) {
     if (!this.mdns) {

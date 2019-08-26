@@ -15,9 +15,9 @@ const { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } = require('./constants
  */
 class Querier extends EE {
   /**
-   * 
-   * @param {object} peerId 
-   * @param {object} options 
+   *
+   * @param {object} peerId
+   * @param {object} options
    */
   constructor (peerId, options) {
     super()
@@ -37,8 +37,8 @@ class Querier extends EE {
   }
 
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
    */
   start (callback) {
     this._handle = periodically(() => {
@@ -70,9 +70,10 @@ class Querier extends EE {
   }
 
   /**
-   * 
-   * @param {object} event 
-   * @param {object} info 
+   *
+   * @param {object} event
+   * @param {object} info
+   * @returns {?object}
    */
   _onResponse (event, info) {
     const answers = event.answers || []
@@ -133,8 +134,8 @@ class Querier extends EE {
     })
   }
   /**
-   * 
-   * @param {function} callback 
+   *
+   * @param {function} callback
    */
   stop (callback) {
     this._handle.stop(callback)
