@@ -7,14 +7,24 @@ const parallel = require('async/parallel')
 const Responder = require('./responder')
 const Querier = require('./querier')
 
+/**
+ * @class
+ */
 class GoMulticastDNS extends EE {
+  /**
+   * 
+   * @param {object} peerInfo 
+   */
   constructor (peerInfo) {
     super()
     this._started = false
     this._peerInfo = peerInfo
     this._onPeer = this._onPeer.bind(this)
   }
-
+  /**
+   * 
+   * @param {function} callback 
+   */
   start (callback) {
     if (this._started) {
       return callback(new Error('MulticastDNS service is already started'))
@@ -31,11 +41,17 @@ class GoMulticastDNS extends EE {
       cb => this._querier.start(cb)
     ], callback)
   }
-
+  /**
+   * 
+   * @param {object} peerInfo 
+   */
   _onPeer (peerInfo) {
     this.emit('peer', peerInfo)
   }
-
+  /**
+   * 
+   * @param {function} callback 
+   */
   stop (callback) {
     if (!this._started) {
       return callback(new Error('MulticastDNS service is not started'))

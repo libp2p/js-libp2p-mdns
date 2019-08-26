@@ -10,7 +10,14 @@ const { SERVICE_TAG_LOCAL } = require('./constants')
 
 const tcp = new TCP()
 
+/**
+ * @class
+ */
 class Responder {
+  /**
+   * 
+   * @param {object} peerInfo 
+   */
   constructor (peerInfo) {
     assert(peerInfo, 'missing peerInfo parameter')
     this._peerInfo = peerInfo

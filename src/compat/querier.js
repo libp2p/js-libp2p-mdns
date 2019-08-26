@@ -10,7 +10,15 @@ const nextTick = require('async/nextTick')
 const log = require('debug')('libp2p:mdns:compat:querier')
 const { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } = require('./constants')
 
+/**
+ * @class
+ */
 class Querier extends EE {
+  /**
+   * 
+   * @param {object} peerId 
+   * @param {object} options 
+   */
   constructor (peerId, options) {
     super()
     assert(peerId, 'missing peerId parameter')
@@ -28,6 +36,10 @@ class Querier extends EE {
     this._onResponse = this._onResponse.bind(this)
   }
 
+  /**
+   * 
+   * @param {function} callback 
+   */
   start (callback) {
     this._handle = periodically(() => {
       // Create a querier that queries multicast but gets responses unicast
@@ -57,6 +69,11 @@ class Querier extends EE {
     nextTick(() => callback())
   }
 
+  /**
+   * 
+   * @param {object} event 
+   * @param {object} info 
+   */
   _onResponse (event, info) {
     const answers = event.answers || []
     const ptrRecord = answers.find(a => a.type === 'PTR' && a.name === SERVICE_TAG_LOCAL)
@@ -115,7 +132,10 @@ class Querier extends EE {
       this.emit('peer', info)
     })
   }
-
+  /**
+   * 
+   * @param {function} callback 
+   */
   stop (callback) {
     this._handle.stop(callback)
   }

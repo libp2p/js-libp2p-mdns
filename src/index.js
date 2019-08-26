@@ -10,7 +10,14 @@ const log = debug('libp2p:mdns')
 const query = require('./query')
 const GoMulticastDNS = require('./compat')
 
+/**
+ * @class
+ */
 class MulticastDNS extends EventEmitter {
+  /**
+   * 
+   * @param {object} options 
+   */
   constructor (options) {
     super()
     assert(options.peerInfo, 'needs a PeerInfo to work')
@@ -31,7 +38,10 @@ class MulticastDNS extends EventEmitter {
       this._goMdns.on('peer', this._onPeer)
     }
   }
-
+  /**
+   * 
+   * @param {function} callback 
+   */
   start (callback) {
     const mdns = multicastDNS({ port: this.port })
 
@@ -59,11 +69,17 @@ class MulticastDNS extends EventEmitter {
       nextTick(() => callback())
     }
   }
-
+  /**
+   * 
+   * @param {object} peerInfo 
+   */
   _onPeer (peerInfo) {
     this.emit('peer', peerInfo)
   }
-
+  /**
+   * 
+   * @param {function} callback 
+   */
   stop (callback) {
     if (!this.mdns) {
       return callback(new Error('MulticastDNS service had not started yet'))
