@@ -16,7 +16,8 @@
     "release": "aegir release -t node --no-build",
     "release-minor": "aegir release --type minor -t node --no-build",
     "release-major": "aegir release --type major -t node --no-build",
-    "coverage-publish": "aegir coverage publish"
+    "coverage-publish": "aegir coverage publish",
+    "generate-typings": "./node_modules/.bin/jsdoc -c ./.jsdoc.json"
   },
   "pre-push": [
     "lint"
@@ -36,7 +37,10 @@
   "devDependencies": {
     "aegir": "^18.2.2",
     "chai": "^4.2.0",
-    "dirty-chai": "^2.0.1"
+    "dirty-chai": "^2.0.1",
+    "jsdoc": "^3.6.3",
+    "tsd-jsdoc": "^2.3.1",
+    "typescript-definition-tester": "0.0.6"
   },
   "dependencies": {
     "async": "^2.6.2",
