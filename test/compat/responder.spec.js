@@ -112,7 +112,7 @@ describe('Responder', () => {
       if (!isResponseFrom(event, peerInfos[0])) return
 
       const srvRecord = event.answers.find(a => a.type === 'SRV')
-      if (!srvRecord) return done(new Error('Missing SRV record'))
+      if (!srvRecord) return defer.reject(new Error('Missing SRV record'))
 
       const { port } = srvRecord.data || {}
       const protos = { A: 'ip4', AAAA: 'ip6' }
