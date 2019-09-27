@@ -4,6 +4,7 @@ const Peer = require('peer-info')
 const os = require('os')
 const debug = require('debug')
 const log = debug('libp2p:mdns')
+log.error = debug('libp2p:mdns:error')
 const Multiaddr = require('multiaddr')
 const Id = require('peer-id')
 
@@ -75,7 +76,7 @@ module.exports = {
       multiaddrs.forEach((addr) => peerFound.multiaddrs.add(addr))
       return peerFound
     } catch (err) {
-      log('Error creating PeerInfo from new found peer', err)
+      log.error('Error creating PeerInfo from new found peer', err)
     }
   },
 
@@ -122,20 +123,10 @@ module.exports = {
       })
 
       addresses.forEach((addr) => {
-        if (addr.family === 'ipv4') {
+        if (['ipv4', 'ipv6'].includes(addr.family)) {
           answers.push({
             name: os.hostname(),
-            type: 'A',
-            class: 'IN',
-            ttl: 120,
-            data: addr.host
-          })
-          return
-        }
-        if (addr.family === 'ipv6') {
-          answers.push({
-            name: os.hostname(),
-            type: 'AAAA',
+            type: addr.family === 'ipv4' ? 'A' : 'AAAA',
             class: 'IN',
             ttl: 120,
             data: addr.host

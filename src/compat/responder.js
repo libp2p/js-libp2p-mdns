@@ -67,7 +67,7 @@ class Responder {
     })
 
     addresses.forEach((ma) => {
-      if (ma.family === 'ipv4' || ma.family === 'ipv6') {
+      if (['ipv4', 'ipv6'].includes(ma.family)) {
         answers.push({
           name: OS.hostname(),
           type: ma.family === 'ipv4' ? 'A' : 'AAAA',

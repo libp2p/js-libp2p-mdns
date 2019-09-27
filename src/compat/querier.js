@@ -6,7 +6,9 @@ const MDNS = require('multicast-dns')
 const Multiaddr = require('multiaddr')
 const PeerInfo = require('peer-info')
 const PeerId = require('peer-id')
-const log = require('debug')('libp2p:mdns:compat:querier')
+const debug = require('debug')
+const log = debug('libp2p:mdns:compat:querier')
+log.error = debug('libp2p:mdns:compat:querier:error')
 const { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } = require('./constants')
 
 class Querier extends EE {
@@ -88,7 +90,7 @@ class Querier extends EE {
     try {
       peerInfo = await PeerInfo.create(peerId)
     } catch (err) {
-      return log('failed to create peer info from peer ID', peerId, err)
+      return log.error('failed to create peer info from peer ID', peerId, err)
     }
 
     const srvRecord = answers.find(a => a.type === 'SRV')
