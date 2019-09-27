@@ -35,29 +35,18 @@ describe('GoMulticastDNS', () => {
     return mdns.stop()
   })
 
-  it('should not start when started', async () => {
+  it('should ignore multiple start calls', async () => {
     const mdns = new GoMulticastDNS(peerInfos[0])
 
     await mdns.start()
     await mdns.start()
-      .then(expect.fail, (err) => {
-        expect(err.message).to.equal('MulticastDNS service is already started')
-      })
 
     return mdns.stop()
   })
 
-  it('should not stop when not started', async () => {
+  it('should ignore unnecessary stop calls', async () => {
     const mdns = new GoMulticastDNS(peerInfos[0])
-
-    try {
-      await mdns.stop()
-    } catch (err) {
-      expect(err.message).to.equal('MulticastDNS service is not started')
-      return
-    }
-
-    expect.fail('An error should have been thrown')
+    await mdns.stop()
   })
 
   it('should emit peer info when peer is discovered', async () => {

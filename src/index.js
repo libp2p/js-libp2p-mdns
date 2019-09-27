@@ -36,6 +36,8 @@ class MulticastDNS extends EventEmitter {
    * @returns {void}
    */
   async start () {
+    if (this.mdns) return
+
     this.mdns = multicastDNS({ port: this.port })
     this.mdns.on('query', (event) => this._onMdnsQuery(event))
     this.mdns.on('response', (event) => this._onMdnsResponse(event))
@@ -71,7 +73,7 @@ class MulticastDNS extends EventEmitter {
    */
   async stop () {
     if (!this.mdns) {
-      throw new Error('MulticastDNS service had not started yet')
+      return
     }
 
     this.mdns.removeListener('query', this._onMdnsQuery)

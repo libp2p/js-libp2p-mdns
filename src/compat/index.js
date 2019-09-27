@@ -16,7 +16,7 @@ class GoMulticastDNS extends EE {
 
   async start () {
     if (this._started) {
-      throw new Error('MulticastDNS service is already started')
+      return
     }
 
     this._started = true
@@ -36,7 +36,7 @@ class GoMulticastDNS extends EE {
   }
 
   stop () {
-    if (!this._started) throw new Error('MulticastDNS service is not started')
+    if (!this._started) return
 
     const responder = this._responder
     const querier = this._querier

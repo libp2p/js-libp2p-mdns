@@ -38,6 +38,7 @@
     "chai": "^4.2.0",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
+    "interface-discovery": "^0.1.0",
     "p-defer": "^3.0.0"
   },
   "dependencies": {
