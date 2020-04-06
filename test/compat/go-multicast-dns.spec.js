@@ -5,38 +5,36 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-const PeerInfo = require('peer-info')
+
+const multiaddr = require('multiaddr')
+const PeerId = require('peer-id')
 const pDefer = require('p-defer')
 
 const GoMulticastDNS = require('../../src/compat')
 
 describe('GoMulticastDNS', () => {
   const peerAddrs = [
-    '/ip4/127.0.0.1/tcp/20001',
-    '/ip4/127.0.0.1/tcp/20002'
+    multiaddr('/ip4/127.0.0.1/tcp/20001'),
+    multiaddr('/ip4/127.0.0.1/tcp/20002')
   ]
-  let peerInfos
+  let peerIds
 
   before(async () => {
-    peerInfos = await Promise.all([
-      PeerInfo.create(),
-      PeerInfo.create()
+    peerIds = await Promise.all([
+      PeerId.create(),
+      PeerId.create()
     ])
-
-    peerInfos.forEach((peer, index) => {
-      peer.multiaddrs.add(peerAddrs[index])
-    })
   })
 
   it('should start and stop', async () => {
-    const mdns = new GoMulticastDNS(peerInfos[0])
+    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
 
     await mdns.start()
     return mdns.stop()
   })
 
   it('should ignore multiple start calls', async () => {
-    const mdns = new GoMulticastDNS(peerInfos[0])
+    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
 
     await mdns.start()
     await mdns.start()
@@ -45,18 +43,19 @@ describe('GoMulticastDNS', () => {
   })
 
   it('should ignore unnecessary stop calls', async () => {
-    const mdns = new GoMulticastDNS(peerInfos[0])
+    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
     await mdns.stop()
   })
 
   it('should emit peer info when peer is discovered', async () => {
-    const mdnsA = new GoMulticastDNS(peerInfos[0])
-    const mdnsB = new GoMulticastDNS(peerInfos[1])
+    const mdnsA = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
+    const mdnsB = new GoMulticastDNS(peerIds[1], [peerAddrs[1]])
     const defer = pDefer()
 
-    mdnsA.on('peer', info => {
-      if (!info.id.isEqual(peerInfos[1].id)) return
-      expect(info.multiaddrs.has(peerAddrs[1])).to.be.true()
+    mdnsA.on('peer', ({ id, multiaddrs }) => {
+      if (!id.isEqual(peerIds[1])) return
+
+      expect(multiaddrs.some((m) => m.equals(peerAddrs[1]))).to.be.true()
       defer.resolve()
     })
 

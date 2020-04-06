@@ -1,15 +1,15 @@
 'use strict'
 
 const test = require('interface-discovery')
-const PeerInfo = require('peer-info')
+const PeerId = require('peer-id')
 const MulticastDNS = require('../src')
 let mdns
 
 const common = {
   async setup () {
-    const peerInfo = await PeerInfo.create()
+    const peerId = await PeerId.create()
     mdns = new MulticastDNS({
-      peerInfo,
+      peerId: peerId,
       broadcast: false,
       port: 50001,
       compat: true
