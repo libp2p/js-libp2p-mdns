@@ -25,7 +25,9 @@ class MulticastDNS extends EventEmitter {
     this._onPeer = this._onPeer.bind(this)
 
     if (options.compat !== false) {
-      this._goMdns = new GoMulticastDNS(options.peerId, this.peerMultiaddrs, {
+      this._goMdns = new GoMulticastDNS({
+        multiaddrs: this.peerMultiaddrs,
+        peerId: options.peerId,
         queryPeriod: options.compatQueryPeriod,
         queryInterval: options.compatQueryInterval
       })
@@ -56,9 +58,9 @@ class MulticastDNS extends EventEmitter {
     query.gotQuery(event, this.mdns, this.peerId, this.peerMultiaddrs, this.serviceTag, this.broadcast)
   }
 
-  async _onMdnsResponse (event) {
+  _onMdnsResponse (event) {
     try {
-      const foundPeer = await query.gotResponse(event, this.peerId, this.serviceTag)
+      const foundPeer = query.gotResponse(event, this.peerId, this.serviceTag)
 
       if (foundPeer) {
         this.emit('peer', foundPeer)
@@ -68,8 +70,8 @@ class MulticastDNS extends EventEmitter {
     }
   }
 
-  _onPeer (peerInfo) {
-    this.emit('peer', peerInfo)
+  _onPeer (peerData) {
+    this.emit('peer', peerData)
   }
 
   /**

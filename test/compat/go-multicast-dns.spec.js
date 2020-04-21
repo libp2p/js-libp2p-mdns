@@ -27,14 +27,20 @@ describe('GoMulticastDNS', () => {
   })
 
   it('should start and stop', async () => {
-    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
+    const mdns = new GoMulticastDNS({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
 
     await mdns.start()
     return mdns.stop()
   })
 
   it('should ignore multiple start calls', async () => {
-    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
+    const mdns = new GoMulticastDNS({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
 
     await mdns.start()
     await mdns.start()
@@ -43,13 +49,22 @@ describe('GoMulticastDNS', () => {
   })
 
   it('should ignore unnecessary stop calls', async () => {
-    const mdns = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
+    const mdns = new GoMulticastDNS({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
     await mdns.stop()
   })
 
-  it('should emit peer info when peer is discovered', async () => {
-    const mdnsA = new GoMulticastDNS(peerIds[0], [peerAddrs[0]])
-    const mdnsB = new GoMulticastDNS(peerIds[1], [peerAddrs[1]])
+  it('should emit peer data when peer is discovered', async () => {
+    const mdnsA = new GoMulticastDNS({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
+    const mdnsB = new GoMulticastDNS({
+      peerId: peerIds[1],
+      multiaddrs: [peerAddrs[1]]
+    })
     const defer = pDefer()
 
     mdnsA.on('peer', ({ id, multiaddrs }) => {

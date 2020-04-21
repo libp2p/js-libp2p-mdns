@@ -38,7 +38,10 @@ describe('Responder', () => {
   })
 
   it('should start and stop', async () => {
-    const responder = new Responder(peerIds[0], [peerAddrs[0]])
+    const responder = new Responder({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
 
     await responder.start()
     await responder.stop()
@@ -46,7 +49,10 @@ describe('Responder', () => {
 
   it('should not respond to a query if no TCP addresses', async () => {
     const peerId = await PeerId.create()
-    responder = new Responder(peerId, [])
+    responder = new Responder({
+      peerId,
+      multiaddrs: []
+    })
     mdns = MDNS({ multicast: false, interface: '0.0.0.0', port: 0 })
 
     await responder.start()
@@ -72,7 +78,10 @@ describe('Responder', () => {
   })
 
   it('should not respond to a query with non matching service tag', async () => {
-    responder = new Responder(peerIds[0], [peerAddrs[0]])
+    responder = new Responder({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
     mdns = MDNS({ multicast: false, interface: '0.0.0.0', port: 0 })
 
     await responder.start()
@@ -100,7 +109,10 @@ describe('Responder', () => {
   })
 
   it('should respond correctly', async () => {
-    responder = new Responder(peerIds[0], [peerAddrs[0]])
+    responder = new Responder({
+      peerId: peerIds[0],
+      multiaddrs: [peerAddrs[0]]
+    })
     mdns = MDNS({ multicast: false, interface: '0.0.0.0', port: 0 })
 
     await responder.start()

@@ -10,24 +10,24 @@ log.error = debug('libp2p:mdns:compat:querier:error')
 const { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } = require('./constants')
 
 class Querier extends EE {
-  constructor (peerId, options) {
+  constructor ({ peerId, queryInterval = 60000, queryPeriod }) {
     super()
 
     if (!peerId) {
       throw new Error('missing peerId parameter')
     }
 
-    options = options || {}
     this._peerIdStr = peerId.toB58String()
-    // Re-query every 60s, in leu of network change detection
-    options.queryInterval = options.queryInterval || 60000
-    // Time for which the MDNS server will stay alive waiting for responses
-    // Must be less than options.queryInterval!
-    options.queryPeriod = Math.min(
-      options.queryInterval,
-      options.queryPeriod == null ? 5000 : options.queryPeriod
-    )
-    this._options = options
+    this._options = {
+      // Re-query in leu of network change detection (every 60s by default)
+      queryInterval: queryInterval,
+      // Time for which the MDNS server will stay alive waiting for responses
+      // Must be less than options.queryInterval!
+      queryPeriod: Math.min(
+        queryInterval,
+        queryPeriod == null ? 5000 : queryPeriod
+      )
+    }
     this._onResponse = this._onResponse.bind(this)
   }
 

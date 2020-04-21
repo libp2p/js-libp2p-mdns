@@ -6,7 +6,7 @@ const log = require('debug')('libp2p:mdns:compat:responder')
 const { SERVICE_TAG_LOCAL } = require('./constants')
 
 class Responder {
-  constructor (peerId, multiaddrs) {
+  constructor ({ peerId, multiaddrs }) {
     if (!peerId) {
       throw new Error('missing peerId parameter')
     }

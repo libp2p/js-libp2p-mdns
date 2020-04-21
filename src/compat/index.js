@@ -7,11 +7,13 @@ const Responder = require('./responder')
 const Querier = require('./querier')
 
 class GoMulticastDNS extends EE {
-  constructor (peerId, multiaddrs) {
+  constructor ({ peerId, multiaddrs, queryPeriod, queryInterval }) {
     super()
     this._started = false
     this._peerId = peerId
     this._multiaddrs = multiaddrs
+    this._queryPeriod = queryPeriod
+    this._queryInterval = queryInterval
     this._onPeer = this._onPeer.bind(this)
   }
 
@@ -21,8 +23,15 @@ class GoMulticastDNS extends EE {
     }
 
     this._started = true
-    this._responder = new Responder(this._peerId, this._multiaddrs)
-    this._querier = new Querier(this._peerId)
+    this._responder = new Responder({
+      peerId: this._peerId,
+      multiaddrs: this._multiaddrs
+    })
+    this._querier = new Querier({
+      peerId: this._peerId,
+      queryInterval: this._queryInterval,
+      queryPeriod: this._queryPeriod
+    })
 
     this._querier.on('peer', this._onPeer)
 
@@ -32,8 +41,8 @@ class GoMulticastDNS extends EE {
     ])
   }
 
-  _onPeer (peerInfo) {
-    this.emit('peer', peerInfo)
+  _onPeer (peerData) {
+    this.emit('peer', peerData)
   }
 
   stop () {

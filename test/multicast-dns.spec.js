@@ -191,9 +191,9 @@ describe('MulticastDNS', () => {
     await mdns.start()
 
     return new Promise((resolve, reject) => {
-      mdns.on('peer', (peerInfo) => {
-        if (!peerInfo) {
-          reject(new Error('peerInfo was not set'))
+      mdns.on('peer', (peerData) => {
+        if (!peerData) {
+          reject(new Error('peerData was not set'))
         }
       })
 
@@ -201,7 +201,7 @@ describe('MulticastDNS', () => {
         // query.gotResponse is async - we'll bail from that method when
         // comparing the senders PeerId to our own but it'll happen later
         // so allow enough time for the test to have failed if we emit
-        // empty PeerInfo objects
+        // empty peerData objects
         setTimeout(() => {
           resolve()
         }, 100)

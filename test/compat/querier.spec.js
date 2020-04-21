@@ -36,14 +36,14 @@ describe('Querier', () => {
   })
 
   it('should start and stop', async () => {
-    const querier = new Querier(peerIds[0])
+    const querier = new Querier({ peerId: peerIds[0] })
 
     await querier.start()
     await querier.stop()
   })
 
   it('should query on interval', async () => {
-    querier = new Querier(peerIds[0], { queryPeriod: 0, queryInterval: 10 })
+    querier = new Querier({ peerId: peerIds[0], queryPeriod: 0, queryInterval: 10 })
     mdns = MDNS()
 
     let queryCount = 0
@@ -243,7 +243,7 @@ describe('Querier', () => {
    * @param {Function} getResponse Given a query, construct a response to test the querier
    */
   async function ensurePeer (getResponse) {
-    querier = new Querier(peerIds[0])
+    querier = new Querier({ peerId: peerIds[0] })
     mdns = MDNS()
 
     mdns.on('query', (event, info) => {
@@ -266,11 +266,11 @@ describe('Querier', () => {
   }
 
   /**
-   * Ensure none of peerInfos are emitted from `querier`
+   * Ensure none of peerIds are emitted from `querier`
    * @param {Function} getResponse Given a query, construct a response to test the querier
    */
   async function ensureNoPeer (getResponse) {
-    querier = new Querier(peerIds[0])
+    querier = new Querier({ peerId: peerIds[0] })
     mdns = MDNS()
 
     mdns.on('query', (event, info) => {
