@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "mafmt": "^7.1.0",
     "multiaddr": "^7.5.0",
     "multicast-dns": "^7.2.0",
     "peer-id": "^0.13.13"
