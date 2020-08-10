@@ -4,6 +4,7 @@ const OS = require('os')
 const MDNS = require('multicast-dns')
 const log = require('debug')('libp2p:mdns:compat:responder')
 const { SERVICE_TAG_LOCAL } = require('./constants')
+const { Buffer } = require('buffer')
 
 class Responder {
   constructor ({ peerId, multiaddrs }) {
