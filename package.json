@@ -1,5 +1,5 @@
 {
-  "name": "libp2p-mdns",
+  "name": "@libp2p/mdns",
   "version": "0.18.0",
   "description": "Node.js libp2p mDNS discovery implementation for peer discovery",
   "license": "Apache-2.0 OR MIT",
