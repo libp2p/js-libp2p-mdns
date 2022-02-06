@@ -1,27 +1,32 @@
 /* eslint-env mocha */
-'use strict'
 
-const { expect } = require('aegir/utils/chai')
-const { Multiaddr } = require('multiaddr')
-const PeerId = require('peer-id')
-const pWaitFor = require('p-wait-for')
-
-const MulticastDNS = require('./../src')
+import { expect } from 'aegir/utils/chai.js'
+import { Multiaddr } from '@multiformats/multiaddr'
+import { createEd25519PeerId } from '@libp2p/peer-id-factory'
+import pWaitFor from 'p-wait-for'
+import { MulticastDNS } from './../src/index.js'
+import { base58btc } from 'multiformats/bases/base58'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type { PeerData } from '@libp2p/interfaces/peer-data'
 
 describe('MulticastDNS', () => {
-  let pA, aMultiaddrs
-  let pB, bMultiaddrs
-  let pC, cMultiaddrs
-  let pD, dMultiaddrs
+  let pA: PeerId
+  let aMultiaddrs: Multiaddr[]
+  let pB: PeerId
+  let bMultiaddrs: Multiaddr[]
+  let pC: PeerId
+  let cMultiaddrs: Multiaddr[]
+  let pD: PeerId
+  let dMultiaddrs: Multiaddr[]
 
   before(async function () {
     this.timeout(80 * 1000)
 
     ;[pA, pB, pC, pD] = await Promise.all([
-      PeerId.create(),
-      PeerId.create(),
-      PeerId.create(),
-      PeerId.create()
+      createEd25519PeerId(),
+      createEd25519PeerId(),
+      createEd25519PeerId(),
+      createEd25519PeerId()
     ])
 
     aMultiaddrs = [
@@ -52,9 +57,7 @@ describe('MulticastDNS', () => {
 
     const mdnsA = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       broadcast: false, // do not talk to ourself
       port: 50001,
       compat: false
@@ -62,19 +65,17 @@ describe('MulticastDNS', () => {
 
     const mdnsB = new MulticastDNS({
       peerId: pB,
-      libp2p: {
-        multiaddrs: bMultiaddrs
-      },
+      multiaddrs: bMultiaddrs,
       port: 50001, // port must be the same
       compat: false
     })
 
-    mdnsA.start()
-    mdnsB.start()
+    await mdnsA.start()
+    await mdnsB.start()
 
     const { id } = await new Promise((resolve) => mdnsA.once('peer', resolve))
 
-    expect(pB.toB58String()).to.eql(id.toB58String())
+    expect(pB.toString(base58btc)).to.eql(id.toString(base58btc))
 
     await Promise.all([mdnsA.stop(), mdnsB.stop()])
   })
@@ -84,38 +85,32 @@ describe('MulticastDNS', () => {
 
     const mdnsA = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       broadcast: false, // do not talk to ourself
       port: 50003,
       compat: false
     })
     const mdnsC = new MulticastDNS({
       peerId: pC,
-      libp2p: {
-        multiaddrs: cMultiaddrs
-      },
+      multiaddrs: cMultiaddrs,
       port: 50003, // port must be the same
       compat: false
     })
     const mdnsD = new MulticastDNS({
       peerId: pD,
-      libp2p: {
-        multiaddrs: dMultiaddrs
-      },
+      multiaddrs: dMultiaddrs,
       port: 50003, // port must be the same
       compat: false
     })
 
-    mdnsA.start()
-    mdnsC.start()
-    mdnsD.start()
+    await mdnsA.start()
+    await mdnsC.start()
+    await mdnsD.start()
 
     const peers = new Map()
-    const expectedPeer = pC.toB58String()
+    const expectedPeer = pC.toString(base58btc)
 
-    const foundPeer = peer => peers.set(peer.id.toB58String(), peer)
+    const foundPeer = (peer: PeerData) => peers.set(peer.id.toString(base58btc), peer)
     mdnsA.on('peer', foundPeer)
 
     await pWaitFor(() => peers.has(expectedPeer))
@@ -135,9 +130,7 @@ describe('MulticastDNS', () => {
 
     const mdnsA = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       broadcast: false, // do not talk to ourself
       port: 50001,
       compat: false
@@ -145,19 +138,17 @@ describe('MulticastDNS', () => {
 
     const mdnsB = new MulticastDNS({
       peerId: pB,
-      libp2p: {
-        multiaddrs: bMultiaddrs
-      },
+      multiaddrs: bMultiaddrs,
       port: 50001,
       compat: false
     })
 
-    mdnsA.start()
-    mdnsB.start()
+    await mdnsA.start()
+    await mdnsB.start()
 
     const { id, multiaddrs } = await new Promise((resolve) => mdnsA.once('peer', resolve))
 
-    expect(pB.toB58String()).to.eql(id.toB58String())
+    expect(pB.toString(base58btc)).to.eql(id.toString(base58btc))
     expect(multiaddrs.length).to.equal(2)
 
     await Promise.all([mdnsA.stop(), mdnsB.stop()])
@@ -168,26 +159,22 @@ describe('MulticastDNS', () => {
 
     const mdnsA = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       port: 50004, // port must be the same
       compat: false
     })
 
     const mdnsC = new MulticastDNS({
       peerId: pC,
-      libp2p: {
-        multiaddrs: cMultiaddrs
-      },
+      multiaddrs: cMultiaddrs,
       port: 50004,
       compat: false
     })
 
-    mdnsA.start()
+    await mdnsA.start()
     await new Promise((resolve) => setTimeout(resolve, 1000))
     await mdnsA.stop()
-    mdnsC.start()
+    await mdnsC.start()
 
     mdnsC.once('peer', () => {
       throw new Error('Should not receive new peer.')
@@ -200,9 +187,7 @@ describe('MulticastDNS', () => {
   it('should start and stop with go-libp2p-mdns compat', async () => {
     const mdns = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       port: 50004
     })
 
@@ -213,19 +198,22 @@ describe('MulticastDNS', () => {
   it('should not emit undefined peer ids', async () => {
     const mdns = new MulticastDNS({
       peerId: pA,
-      libp2p: {
-        multiaddrs: aMultiaddrs
-      },
+      multiaddrs: aMultiaddrs,
       port: 50004
     })
     await mdns.start()
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       mdns.on('peer', (peerData) => {
-        if (!peerData) {
+        if (peerData == null) {
           reject(new Error('peerData was not set'))
         }
       })
+
+      if (mdns.mdns == null) {
+        reject(new Error('mdns property was not set'))
+        return
+      }
 
       mdns.mdns.on('response', () => {
         // query.gotResponse is async - we'll bail from that method when

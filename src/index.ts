@@ -1,26 +1,56 @@
-'use strict'
+import multicastDNS from 'multicast-dns'
+import { EventEmitter } from 'events'
+import debug from 'debug'
+import * as query from './query.js'
+import { GoMulticastDNS } from './compat/index.js'
+import type { PeerId } from '@libp2p/interfaces/peer-id'
+import type PeerDiscovery from '@libp2p/interfaces/peer-discovery'
+import type { Multiaddr } from '@multiformats/multiaddr'
+import type { PeerData } from '@libp2p/interfaces/peer-data'
 
-const multicastDNS = require('multicast-dns')
-const { EventEmitter } = require('events')
-const debug = require('debug')
-const log = debug('libp2p:mdns')
-const query = require('./query')
-const GoMulticastDNS = require('./compat')
+const log = Object.assign(debug('libp2p:mdns'), {
+  error: debug('libp2p:mdns:error')
+})
 
-class MulticastDNS extends EventEmitter {
-  constructor (options = {}) {
+export interface MulticastDNSOptions {
+  peerId: PeerId
+  broadcast?: boolean
+  interval?: number
+  serviceTag?: string
+  port?: number
+  multiaddrs?: Multiaddr[]
+  compat?: boolean
+  compatQueryPeriod?: number
+  compatQueryInterval?: number
+}
+
+export class MulticastDNS extends EventEmitter implements PeerDiscovery {
+  static tag = 'mdns'
+
+  public mdns?: multicastDNS.MulticastDNS
+
+  private readonly broadcast: boolean
+  private readonly interval: number
+  private readonly serviceTag: string
+  private readonly port: number
+  private readonly peerId: PeerId
+  private readonly peerMultiaddrs: Multiaddr[] // TODO: update this when multiaddrs change?
+  private _queryInterval: NodeJS.Timer | null
+  private readonly _goMdns?: GoMulticastDNS
+
+  constructor (options: MulticastDNSOptions) {
     super()
 
-    if (!options.peerId) {
+    if (options.peerId == null) {
       throw new Error('needs own PeerId to work')
     }
 
     this.broadcast = options.broadcast !== false
-    this.interval = options.interval || (1e3 * 10)
-    this.serviceTag = options.serviceTag || 'ipfs.local'
-    this.port = options.port || 5353
+    this.interval = options.interval ?? (1e3 * 10)
+    this.serviceTag = options.serviceTag ?? 'ipfs.local'
+    this.port = options.port ?? 5353
     this.peerId = options.peerId
-    this.peerMultiaddrs = options.libp2p.multiaddrs || []
+    this.peerMultiaddrs = options.multiaddrs ?? []
     this._queryInterval = null
     this._onPeer = this._onPeer.bind(this)
     this._onMdnsQuery = this._onMdnsQuery.bind(this)
@@ -37,13 +67,19 @@ class MulticastDNS extends EventEmitter {
     }
   }
 
+  isStarted () {
+    return Boolean(this.mdns)
+  }
+
   /**
    * Start sending queries to the LAN.
    *
    * @returns {void}
    */
   async start () {
-    if (this.mdns) return
+    if (this.mdns != null) {
+      return
+    }
 
     this.mdns = multicastDNS({ port: this.port })
     this.mdns.on('query', this._onMdnsQuery)
@@ -51,20 +87,24 @@ class MulticastDNS extends EventEmitter {
 
     this._queryInterval = query.queryLAN(this.mdns, this.serviceTag, this.interval)
 
-    if (this._goMdns) {
+    if (this._goMdns != null) {
       await this._goMdns.start()
     }
   }
 
-  _onMdnsQuery (event) {
+  _onMdnsQuery (event: multicastDNS.QueryPacket) {
+    if (this.mdns == null) {
+      return
+    }
+
     query.gotQuery(event, this.mdns, this.peerId, this.peerMultiaddrs, this.serviceTag, this.broadcast)
   }
 
-  _onMdnsResponse (event) {
+  _onMdnsResponse (event: multicastDNS.ResponsePacket) {
     try {
       const foundPeer = query.gotResponse(event, this.peerId, this.serviceTag)
 
-      if (foundPeer) {
+      if (foundPeer != null) {
         this.emit('peer', foundPeer)
       }
     } catch (err) {
@@ -72,8 +112,8 @@ class MulticastDNS extends EventEmitter {
     }
   }
 
-  _onPeer (peerData) {
-    this.mdns && this.emit('peer', peerData)
+  _onPeer (peerData: PeerData) {
+    (this.mdns != null) && this.emit('peer', peerData)
   }
 
   /**
@@ -82,28 +122,33 @@ class MulticastDNS extends EventEmitter {
    * @returns {Promise}
    */
   async stop () {
-    if (!this.mdns) {
+    if (this.mdns == null) {
       return
     }
 
     this.mdns.removeListener('query', this._onMdnsQuery)
     this.mdns.removeListener('response', this._onMdnsResponse)
-    this._goMdns && this._goMdns.removeListener('peer', this._onPeer)
+    this._goMdns?.removeListener('peer', this._onPeer)
 
-    clearInterval(this._queryInterval)
-    this._queryInterval = null
+    if (this._queryInterval != null) {
+      clearInterval(this._queryInterval)
+      this._queryInterval = null
+    }
 
     await Promise.all([
-      this._goMdns && this._goMdns.stop(),
-      new Promise((resolve) => this.mdns.destroy(resolve))
+      this._goMdns?.stop(),
+      new Promise<void>((resolve) => {
+        if (this.mdns != null) {
+          this.mdns.destroy(resolve)
+        } else {
+          resolve()
+        }
+      })
     ])
 
     this.mdns = undefined
   }
 }
-
-exports = module.exports = MulticastDNS
-exports.tag = 'mdns'
 
 /* for reference
 
