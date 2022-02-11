@@ -73,7 +73,9 @@ describe('MulticastDNS', () => {
     await mdnsA.start()
     await mdnsB.start()
 
-    const { id } = await new Promise((resolve) => mdnsA.once('peer', resolve))
+    const { detail: { id } } = await new Promise<CustomEvent<PeerData>>((resolve) => mdnsA.addEventListener('peer', resolve, {
+      once: true
+    }))
 
     expect(pB.toString(base58btc)).to.eql(id.toString(base58btc))
 
@@ -110,11 +112,11 @@ describe('MulticastDNS', () => {
     const peers = new Map()
     const expectedPeer = pC.toString(base58btc)
 
-    const foundPeer = (peer: PeerData) => peers.set(peer.id.toString(base58btc), peer)
-    mdnsA.on('peer', foundPeer)
+    const foundPeer = (evt: CustomEvent<PeerData>) => peers.set(evt.detail.id.toString(base58btc), evt.detail)
+    mdnsA.addEventListener('peer', foundPeer)
 
     await pWaitFor(() => peers.has(expectedPeer))
-    mdnsA.removeListener('peer', foundPeer)
+    mdnsA.removeEventListener('peer', foundPeer)
 
     expect(peers.get(expectedPeer).multiaddrs.length).to.equal(1)
 
@@ -146,7 +148,9 @@ describe('MulticastDNS', () => {
     await mdnsA.start()
     await mdnsB.start()
 
-    const { id, multiaddrs } = await new Promise((resolve) => mdnsA.once('peer', resolve))
+    const { detail: { id, multiaddrs } } = await new Promise<CustomEvent<PeerData>>((resolve) => mdnsA.addEventListener('peer', resolve, {
+      once: true
+    }))
 
     expect(pB.toString(base58btc)).to.eql(id.toString(base58btc))
     expect(multiaddrs.length).to.equal(2)
@@ -176,8 +180,10 @@ describe('MulticastDNS', () => {
     await mdnsA.stop()
     await mdnsC.start()
 
-    mdnsC.once('peer', () => {
+    mdnsC.addEventListener('peer', () => {
       throw new Error('Should not receive new peer.')
+    }, {
+      once: true
     })
 
     await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -204,8 +210,8 @@ describe('MulticastDNS', () => {
     await mdns.start()
 
     await new Promise<void>((resolve, reject) => {
-      mdns.on('peer', (peerData) => {
-        if (peerData == null) {
+      mdns.addEventListener('peer', (evt) => {
+        if (evt.detail == null) {
           reject(new Error('peerData was not set'))
         }
       })

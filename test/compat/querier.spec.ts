@@ -254,7 +254,9 @@ describe('Querier', () => {
 
     let peerId
 
-    querier.on('peer', ({ id }) => {
+    querier.addEventListener('peer', (evt) => {
+      const { id } = evt.detail
+
       // Ignore non-test peers
       if (!peerIds[1].equals(id)) {
         return
@@ -290,7 +292,9 @@ describe('Querier', () => {
 
     let peerId
 
-    querier.on('peer', ({ id }) => {
+    querier.addEventListener('peer', (evt) => {
+      const { id } = evt.detail
+
       // Ignore non-test peers
       if (!peerIds[0].equals(id) && !peerIds[1].equals(id)) {
         return

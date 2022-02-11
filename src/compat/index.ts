@@ -1,12 +1,12 @@
 // Compatibility with Go libp2p MDNS
-import { EventEmitter } from 'events'
+import { EventEmitter, CustomEvent } from '@libp2p/interfaces'
 import { Responder } from './responder.js'
 import { Querier } from './querier.js'
 import type { Multiaddr } from '@multiformats/multiaddr'
 import type { PeerId } from '@libp2p/interfaces/peer-id'
-import type { PeerDiscovery } from '@libp2p/interfaces/peer-discovery'
+import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interfaces/peer-discovery'
 
-export class GoMulticastDNS extends EventEmitter implements PeerDiscovery {
+export class GoMulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDiscovery {
   private _started: boolean
   private readonly _responder: Responder
   private readonly _querier: Querier
@@ -27,8 +27,8 @@ export class GoMulticastDNS extends EventEmitter implements PeerDiscovery {
       queryPeriod
     })
 
-    this._querier.on('peer', (peerData) => {
-      this.emit('peer', peerData)
+    this._querier.addEventListener('peer', (evt) => {
+      this.dispatchEvent(new CustomEvent('peer', { detail: evt.detail }))
     })
   }
 

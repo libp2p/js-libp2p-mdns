@@ -1,6 +1,6 @@
 import OS from 'os'
 import MDNS, { QueryPacket } from 'multicast-dns'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { SERVICE_TAG_LOCAL } from './constants.js'
 import type { PeerId } from '@libp2p/interfaces/peer-id'
 import type { Multiaddr, MultiaddrObject } from '@multiformats/multiaddr'
@@ -8,9 +8,7 @@ import { base58btc } from 'multiformats/bases/base58'
 import type { RemoteInfo } from 'dgram'
 import type { Answer } from 'dns-packet'
 
-const log = Object.assign(debug('libp2p:mdns:compat:responder'), {
-  error: debug('libp2p:mdns:compat:responder:error')
-})
+const log = logger('libp2p:mdns:compat:responder')
 
 export interface ResponderOptions {
   peerId: PeerId

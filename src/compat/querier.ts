@@ -1,17 +1,15 @@
-import { EventEmitter } from 'events'
+import { EventEmitter } from '@libp2p/interfaces'
 import MDNS from 'multicast-dns'
 import { Multiaddr } from '@multiformats/multiaddr'
 import { PeerId } from '@libp2p/peer-id'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { SERVICE_TAG_LOCAL, MULTICAST_IP, MULTICAST_PORT } from './constants.js'
 import { base58btc } from 'multiformats/bases/base58'
-import type { PeerDiscovery } from '@libp2p/interfaces/peer-discovery'
+import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interfaces/peer-discovery'
 import type { ResponsePacket } from 'multicast-dns'
 import type { RemoteInfo } from 'dgram'
 
-const log = Object.assign(debug('libp2p:mdns:compat:querier'), {
-  error: debug('libp2p:mdns:compat:querier:error')
-})
+const log = logger('libp2p:mdns:compat:querier')
 
 export interface QuerierOptions {
   peerId: PeerId
@@ -23,7 +21,7 @@ export interface Handle {
   stop: () => Promise<void>
 }
 
-export class Querier extends EventEmitter implements PeerDiscovery {
+export class Querier extends EventEmitter<PeerDiscoveryEvents> implements PeerDiscovery {
   private readonly _peerIdStr: string
   private readonly _options: Required<QuerierOptions>
   private _handle?: Handle
@@ -148,10 +146,13 @@ export class Querier extends EventEmitter implements PeerDiscovery {
       return addrs
     }, [])
 
-    this.emit('peer', {
-      id: peerId,
-      multiaddrs
-    })
+    this.dispatchEvent(new CustomEvent('peer', {
+      detail: {
+        id: peerId,
+        multiaddrs,
+        protcols: []
+      }
+    }))
   }
 
   async stop () {

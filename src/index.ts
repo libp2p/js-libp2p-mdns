@@ -1,16 +1,14 @@
 import multicastDNS from 'multicast-dns'
-import { EventEmitter } from 'events'
-import debug from 'debug'
+import { CustomEvent, EventEmitter } from '@libp2p/interfaces'
+import { logger } from '@libp2p/logger'
 import * as query from './query.js'
 import { GoMulticastDNS } from './compat/index.js'
 import type { PeerId } from '@libp2p/interfaces/peer-id'
-import type PeerDiscovery from '@libp2p/interfaces/peer-discovery'
+import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interfaces/peer-discovery'
 import type { Multiaddr } from '@multiformats/multiaddr'
 import type { PeerData } from '@libp2p/interfaces/peer-data'
 
-const log = Object.assign(debug('libp2p:mdns'), {
-  error: debug('libp2p:mdns:error')
-})
+const log = logger('libp2p:mdns')
 
 export interface MulticastDNSOptions {
   peerId: PeerId
@@ -24,7 +22,7 @@ export interface MulticastDNSOptions {
   compatQueryInterval?: number
 }
 
-export class MulticastDNS extends EventEmitter implements PeerDiscovery {
+export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDiscovery {
   static tag = 'mdns'
 
   public mdns?: multicastDNS.MulticastDNS
@@ -63,7 +61,7 @@ export class MulticastDNS extends EventEmitter implements PeerDiscovery {
         queryPeriod: options.compatQueryPeriod,
         queryInterval: options.compatQueryInterval
       })
-      this._goMdns.on('peer', this._onPeer)
+      this._goMdns.addEventListener('peer', this._onPeer)
     }
   }
 
@@ -105,15 +103,23 @@ export class MulticastDNS extends EventEmitter implements PeerDiscovery {
       const foundPeer = query.gotResponse(event, this.peerId, this.serviceTag)
 
       if (foundPeer != null) {
-        this.emit('peer', foundPeer)
+        this.dispatchEvent(new CustomEvent('peer', {
+          detail: foundPeer
+        }))
       }
     } catch (err) {
       log('Error processing peer response', err)
     }
   }
 
-  _onPeer (peerData: PeerData) {
-    (this.mdns != null) && this.emit('peer', peerData)
+  _onPeer (evt: CustomEvent<PeerData>) {
+    if (this.mdns == null) {
+      return
+    }
+
+    this.dispatchEvent(new CustomEvent('peer', {
+      detail: evt.detail
+    }))
   }
 
   /**
@@ -128,7 +134,7 @@ export class MulticastDNS extends EventEmitter implements PeerDiscovery {
 
     this.mdns.removeListener('query', this._onMdnsQuery)
     this.mdns.removeListener('response', this._onMdnsResponse)
-    this._goMdns?.removeListener('peer', this._onPeer)
+    this._goMdns?.removeEventListener('peer', this._onPeer)
 
     if (this._queryInterval != null) {
       clearInterval(this._queryInterval)

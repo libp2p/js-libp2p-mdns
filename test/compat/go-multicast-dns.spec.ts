@@ -61,12 +61,13 @@ describe('GoMulticastDNS', () => {
     })
     const defer = pDefer()
 
-    mdnsA.on('peer', ({ id, multiaddrs }) => {
+    mdnsA.addEventListener('peer', (evt) => {
+      const { id, multiaddrs } = evt.detail
+
       if (!peerIds[1].equals(id)) {
         return
       }
 
-      // @ts-expect-error types should detect this?
       expect(multiaddrs.some((m) => m.equals(peerAddrs[1]))).to.be.true()
       defer.resolve()
     })

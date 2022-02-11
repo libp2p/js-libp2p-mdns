@@ -1,5 +1,5 @@
 import os from 'os'
-import debug from 'debug'
+import { logger } from '@libp2p/logger'
 import { Multiaddr, MultiaddrObject } from '@multiformats/multiaddr'
 import { base58btc } from 'multiformats/bases/base58'
 import { PeerId } from '@libp2p/peer-id'
@@ -7,9 +7,7 @@ import type { PeerData } from '@libp2p/interfaces/peer-data'
 import type { MulticastDNS, ResponsePacket, QueryPacket } from 'multicast-dns'
 import type { SrvAnswer, StringAnswer, TxtAnswer, Answer } from 'dns-packet'
 
-const log = Object.assign(debug('libp2p:mdns'), {
-  error: debug('libp2p:mdns:error')
-})
+const log = logger('libp2p:mdns')
 
 export function queryLAN (mdns: MulticastDNS, serviceTag: string, interval: number) {
   const query = () => {
