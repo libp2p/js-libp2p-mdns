@@ -89,17 +89,19 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
       return
     }
 
-    log('got query')
+    log.trace('received incoming mDNS query')
     query.gotQuery(event, this.mdns, this.components.getPeerId(), this.components.getAddressManager().getAddresses(), this.serviceTag, this.broadcast)
   }
 
   _onMdnsResponse (event: multicastDNS.ResponsePacket) {
-    log('got response')
+    log.trace('received mDNS query response')
 
     try {
       const foundPeer = query.gotResponse(event, this.components.getPeerId(), this.serviceTag)
 
       if (foundPeer != null) {
+        log('discovered peer in mDNS qeury response %p', foundPeer.id)
+
         this.dispatchEvent(new CustomEvent<PeerData>('peer', {
           detail: foundPeer
         }))
@@ -110,8 +112,6 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
   }
 
   _onPeer (evt: CustomEvent<PeerData>) {
-    log('got peer')
-
     if (this.mdns == null) {
       return
     }

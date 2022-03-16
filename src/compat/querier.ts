@@ -83,7 +83,7 @@ export class Querier extends EventEmitter<PeerDiscoveryEvents> implements PeerDi
   }
 
   _onResponse (event: ResponsePacket, info: RemoteInfo) {
-    log('received query response')
+    log.trace('received mDNS query response')
     const answers = event.answers ?? []
 
     const peerData = findPeerDataInAnswers(answers, this.components.getPeerId())
@@ -97,6 +97,8 @@ export class Querier extends EventEmitter<PeerDiscoveryEvents> implements PeerDi
       log('could not parse multiaddrs from mDNS response')
       return
     }
+
+    log('discovered peer in mDNS qeury response %p', peerData.id)
 
     this.dispatchEvent(new CustomEvent('peer', {
       detail: peerData

@@ -86,10 +86,12 @@ export function gotResponse (rsp: ResponsePacket, localPeerId: PeerId, serviceTa
     return // replied to myself, ignore
   }
 
-  log('peer found -', b58Id)
+  const id = peerIdFromString(b58Id)
+
+  log('peer found %p', id)
 
   return {
-    id: peerIdFromString(b58Id),
+    id,
     multiaddrs,
     protocols: []
   }
