@@ -140,7 +140,7 @@
     "@libp2p/interfaces": "^1.3.18",
     "@libp2p/peer-id-factory": "^1.0.8",
     "@types/multicast-dns": "^7.2.1",
-    "aegir": "^36.1.3",
+    "aegir": "^37.0.0",
     "delay": "^5.0.0",
     "p-defer": "^4.0.0",
     "p-wait-for": "^4.1.0",
