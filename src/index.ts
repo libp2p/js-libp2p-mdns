@@ -15,6 +15,7 @@ export interface MulticastDNSOptions {
   interval?: number
   serviceTag?: string
   port?: number
+  ip?: number
   compat?: boolean
   compatQueryPeriod?: number
   compatQueryInterval?: number
@@ -80,7 +81,7 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
       return
     }
 
-    this.mdns = multicastDNS({ port: this.port })
+    this.mdns = multicastDNS({ port: this.port, ip: this.ip })
     this.mdns.on('query', this._onMdnsQuery)
     this.mdns.on('response', this._onMdnsResponse)
 
