@@ -15,7 +15,7 @@ export interface MulticastDNSOptions {
   interval?: number
   serviceTag?: string
   port?: number
-  ip?: number
+  ip?: string
   compat?: boolean
   compatQueryPeriod?: number
   compatQueryInterval?: number
@@ -28,6 +28,7 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
   private readonly interval: number
   private readonly serviceTag: string
   private readonly port: number
+  private readonly ip: string
   private _queryInterval: ReturnType<typeof setInterval> | null
   private readonly _goMdns?: GoMulticastDNS
   private components: Components = new Components()
