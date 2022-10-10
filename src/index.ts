@@ -39,6 +39,7 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
     this.broadcast = options.broadcast !== false
     this.interval = options.interval ?? (1e3 * 10)
     this.serviceTag = options.serviceTag ?? 'ipfs.local'
+    this.ip = options.ip ?? '224.0.0.251'
     this.port = options.port ?? 5353
     this._queryInterval = null
     this._onPeer = this._onPeer.bind(this)
