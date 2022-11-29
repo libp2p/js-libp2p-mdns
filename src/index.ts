@@ -7,6 +7,7 @@ import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interface-peer-
 import type { PeerInfo } from '@libp2p/interface-peer-info'
 import { Components, Initializable } from '@libp2p/components'
 import { symbol } from '@libp2p/interface-peer-discovery'
+import { stringGen } from './utils.js'
 
 const log = logger('libp2p:mdns')
 
@@ -14,6 +15,7 @@ export interface MulticastDNSOptions {
   broadcast?: boolean
   interval?: number
   serviceTag?: string
+  peerName?: string
   port?: number
   compat?: boolean
   compatQueryPeriod?: number
@@ -26,6 +28,7 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
   private readonly broadcast: boolean
   private readonly interval: number
   private readonly serviceTag: string
+  private readonly peerName: string
   private readonly port: number
   private _queryInterval: ReturnType<typeof setInterval> | null
   private readonly _goMdns?: GoMulticastDNS
@@ -36,7 +39,8 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
 
     this.broadcast = options.broadcast !== false
     this.interval = options.interval ?? (1e3 * 10)
-    this.serviceTag = options.serviceTag ?? 'ipfs.local'
+    this.serviceTag = options.serviceTag ?? '_p2p._udp.local'
+    this.peerName = options.peerName ?? stringGen(64)
     this.port = options.port ?? 5353
     this._queryInterval = null
     this._onPeer = this._onPeer.bind(this)
