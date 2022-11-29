@@ -1,3 +1,44 @@
+## [5.1.0](https://github.com/libp2p/js-libp2p-mdns/compare/v5.0.0...v5.1.0) (2022-10-27)
+
+
+### Features
+
+* add support for custom DNS server IP ([#142](https://github.com/libp2p/js-libp2p-mdns/issues/142)) ([3b6c7db](https://github.com/libp2p/js-libp2p-mdns/commit/3b6c7dbb0e6cfd11d1394ac3e62509926346dbf2))
+
+## [5.0.0](https://github.com/libp2p/js-libp2p-mdns/compare/v4.0.0...v5.0.0) (2022-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* modules no longer implement `Initializable` instead switching to constructor injection
+
+### Bug Fixes
+
+* remove @libp2p/components ([#146](https://github.com/libp2p/js-libp2p-mdns/issues/146)) ([36d68fc](https://github.com/libp2p/js-libp2p-mdns/commit/36d68fc819316ec7f7a215a38310d90130770e0f))
+
+## [4.0.0](https://github.com/libp2p/js-libp2p-mdns/compare/v3.0.1...v4.0.0) (2022-10-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump @libp2p/components from 2.1.1 to 3.0.0 (#143)
+
+### Dependencies
+
+* bump @libp2p/components from 2.1.1 to 3.0.0 ([#143](https://github.com/libp2p/js-libp2p-mdns/issues/143)) ([a6c3f22](https://github.com/libp2p/js-libp2p-mdns/commit/a6c3f22a68c9ea6e5431d3a34e16f67e1e4b9cff))
+
+## [3.0.1](https://github.com/libp2p/js-libp2p-mdns/compare/v3.0.0...v3.0.1) (2022-09-21)
+
+
+### Trivial Changes
+
+* Update .github/workflows/stale.yml [skip ci] ([cfb0b5c](https://github.com/libp2p/js-libp2p-mdns/commit/cfb0b5cb007b18e5a508d2b11856bbdf895c72d8))
+
+
+### Dependencies
+
+* update @multiformats/multiaddr to 11.0.0 ([#140](https://github.com/libp2p/js-libp2p-mdns/issues/140)) ([931be6b](https://github.com/libp2p/js-libp2p-mdns/commit/931be6b3fce395ba2e66e9b811b6fb85b7d40083))
+
 ## [3.0.0](https://github.com/libp2p/js-libp2p-mdns/compare/v2.0.1...v3.0.0) (2022-07-01)
 
 
