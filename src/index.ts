@@ -40,7 +40,11 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
     this.broadcast = options.broadcast !== false
     this.interval = options.interval ?? (1e3 * 10)
     this.serviceTag = options.serviceTag ?? '_p2p._udp.local'
-    this.peerName = options.peerName ?? stringGen(64)
+    this.peerName = options.peerName ?? stringGen(63)
+    // 63 is dns label limit
+    if (this.peerName.length >= 64) {
+      throw new Error('Peer name should be less than 64 chars long')
+    }
     this.port = options.port ?? 5353
     this._queryInterval = null
     this._onPeer = this._onPeer.bind(this)
@@ -101,14 +105,21 @@ export class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements P
     }
 
     log.trace('received incoming mDNS query')
-    query.gotQuery(event, this.mdns, this.components.getPeerId(), this.components.getAddressManager().getAddresses(), this.serviceTag, this.broadcast)
+    const localPeerId = this.components.getPeerId()
+    query.gotQuery(
+      event,
+      this.mdns,
+      this.peerName,
+      this.components.getAddressManager().getAddresses().map((ma) => ma.encapsulate('/p2p/' + localPeerId.toString())),
+      this.serviceTag,
+      this.broadcast)
   }
 
   _onMdnsResponse (event: multicastDNS.ResponsePacket) {
     log.trace('received mDNS query response')
 
     try {
-      const foundPeer = query.gotResponse(event, this.components.getPeerId(), this.serviceTag)
+      const foundPeer = query.gotResponse(event, this.peerName, this.serviceTag)
 
       if (foundPeer != null) {
         log('discovered peer in mDNS qeury response %p', foundPeer.id)

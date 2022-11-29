@@ -24,7 +24,6 @@ describe('MulticastDNS', () => {
   let aMultiaddrs: Multiaddr[]
   let pB: PeerId
   let bMultiaddrs: Multiaddr[]
-  let pC: PeerId
   let cMultiaddrs: Multiaddr[]
   let pD: PeerId
   let dMultiaddrs: Multiaddr[]
@@ -32,8 +31,7 @@ describe('MulticastDNS', () => {
   before(async function () {
     this.timeout(80 * 1000)
 
-    ;[pA, pB, pC, pD] = await Promise.all([
-      createEd25519PeerId(),
+    ;[pA, pB, pD] = await Promise.all([
       createEd25519PeerId(),
       createEd25519PeerId(),
       createEd25519PeerId()
@@ -90,7 +88,7 @@ describe('MulticastDNS', () => {
     await Promise.all([mdnsA.stop(), mdnsB.stop()])
   })
 
-  it('only announce TCP multiaddrs', async function () {
+  it('announces all multiaddresses', async function () {
     this.timeout(40 * 1000)
 
     const mdnsA = new MulticastDNS({
@@ -99,11 +97,11 @@ describe('MulticastDNS', () => {
       compat: false
     })
     mdnsA.init(getComponents(pA, aMultiaddrs))
-    const mdnsC = new MulticastDNS({
+    const mdnsB = new MulticastDNS({
       port: 50003, // port must be the same
       compat: false
     })
-    mdnsC.init(getComponents(pC, cMultiaddrs))
+    mdnsB.init(getComponents(pB, cMultiaddrs))
     const mdnsD = new MulticastDNS({
       port: 50003, // port must be the same
       compat: false
@@ -111,11 +109,11 @@ describe('MulticastDNS', () => {
     mdnsD.init(getComponents(pD, dMultiaddrs))
 
     await mdnsA.start()
-    await mdnsC.start()
+    await mdnsB.start()
     await mdnsD.start()
 
     const peers = new Map()
-    const expectedPeer = pC.toString()
+    const expectedPeer = pB.toString()
 
     const foundPeer = (evt: CustomEvent<PeerInfo>) => peers.set(evt.detail.id.toString(), evt.detail)
     mdnsA.addEventListener('peer', foundPeer)
@@ -123,42 +121,13 @@ describe('MulticastDNS', () => {
     await pWaitFor(() => peers.has(expectedPeer))
     mdnsA.removeEventListener('peer', foundPeer)
 
-    expect(peers.get(expectedPeer).multiaddrs.length).to.equal(1)
+    expect(peers.get(expectedPeer).multiaddrs.length).to.equal(3)
 
     await Promise.all([
       mdnsA.stop(),
-      mdnsC.stop(),
+      mdnsB.stop(),
       mdnsD.stop()
     ])
-  })
-
-  it('announces IP6 addresses', async function () {
-    this.timeout(40 * 1000)
-
-    const mdnsA = new MulticastDNS({
-      broadcast: false, // do not talk to ourself
-      port: 50001,
-      compat: false
-    })
-    mdnsA.init(getComponents(pA, aMultiaddrs))
-
-    const mdnsB = new MulticastDNS({
-      port: 50001,
-      compat: false
-    })
-    mdnsB.init(getComponents(pB, bMultiaddrs))
-
-    await mdnsA.start()
-    await mdnsB.start()
-
-    const { detail: { id, multiaddrs } } = await new Promise<CustomEvent<PeerInfo>>((resolve) => mdnsA.addEventListener('peer', resolve, {
-      once: true
-    }))
-
-    expect(pB.toString()).to.eql(id.toString())
-    expect(multiaddrs.length).to.equal(2)
-
-    await Promise.all([mdnsA.stop(), mdnsB.stop()])
   })
 
   it('doesn\'t emit peers after stop', async function () {
