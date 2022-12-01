@@ -202,7 +202,7 @@ describe('MulticastDNS', () => {
 
     const mdnsB = mdns({
       port: 50005, // port must be the same
-      ip: '224.0.0.252', // ip must be the same
+      ip: '224.0.0.252' // ip must be the same
     })(getComponents(pB, bMultiaddrs))
 
     await start(mdnsA, mdnsB)
