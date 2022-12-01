@@ -166,40 +166,17 @@ export function mdns (init: MulticastDNSInit = {}): (components: MulticastDNSCom
 
 /* for reference
 
-   [ { name: 'discovery.ipfs.io.local',
+   [ { name: '_p2p._udp.local',
        type: 'PTR',
        class: 1,
        ttl: 120,
-       data: 'QmbBHw1Xx9pUpAbrVZUKTPL5Rsph5Q9GQhRvcWVBPFgGtC.discovery.ipfs.io.local' },
+       data: 'XQxZeAH6MX2n4255fzYmyUCUdhQ0DAWv.p2p._udp.local' },
 
-     { name: 'QmbBHw1Xx9pUpAbrVZUKTPL5Rsph5Q9GQhRvcWVBPFgGtC.discovery.ipfs.io.local',
-       type: 'SRV',
-       class: 1,
-       ttl: 120,
-       data: { priority: 10, weight: 1, port: 4001, target: 'lorien.local' } },
-
-     { name: 'lorien.local',
-       type: 'A',
-       class: 1,
-       ttl: 120,
-       data: '127.0.0.1' },
-
-     { name: 'lorien.local',
-       type: 'A',
-       class: 1,
-       ttl: 120,
-       data: '127.94.0.1' },
-
-     { name: 'lorien.local',
-       type: 'A',
-       class: 1,
-       ttl: 120,
-       data: '172.16.38.224' },
-
-     { name: 'QmbBHw1Xx9pUpAbrVZUKTPL5Rsph5Q9GQhRvcWVBPFgGtC.discovery.ipfs.io.local',
+     { name: 'XQxZeAH6MX2n4255fzYmyUCUdhQ0DAWv.p2p._udp.local',
        type: 'TXT',
        class: 1,
        ttl: 120,
-       data: 'QmbBHw1Xx9pUpAbrVZUKTPL5Rsph5Q9GQhRvcWVBPFgGtC' } ],
+       data: 'dnsaddr=/ip4/127.0.0.1/tcp/80/p2p/QmbBHw1Xx9pUpAbrVZUKTPL5Rsph5Q9GQhRvcWVBPFgGtC' },
+]
 
 */
