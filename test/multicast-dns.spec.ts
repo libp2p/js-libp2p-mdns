@@ -65,13 +65,11 @@ describe('MulticastDNS', () => {
 
     const mdnsA = mdns({
       broadcast: false, // do not talk to ourself
-      port: 50001,
-      compat: false
+      port: 50001
     })(getComponents(pA, aMultiaddrs))
 
     const mdnsB = mdns({
-      port: 50001, // port must be the same
-      compat: false
+      port: 50001 // port must be the same
     })(getComponents(pB, bMultiaddrs))
 
     await start(mdnsA, mdnsB)
@@ -90,16 +88,13 @@ describe('MulticastDNS', () => {
 
     const mdnsA = mdns({
       broadcast: false, // do not talk to ourself
-      port: 50003,
-      compat: false
+      port: 50003
     })(getComponents(pA, aMultiaddrs))
     const mdnsB = mdns({
-      port: 50003, // port must be the same
-      compat: false
+      port: 50003 // port must be the same
     })(getComponents(pB, cMultiaddrs))
     const mdnsD = mdns({
-      port: 50003, // port must be the same
-      compat: false
+      port: 50003 // port must be the same
     })(getComponents(pD, dMultiaddrs))
 
     await start(mdnsA, mdnsB, mdnsD)
@@ -122,13 +117,11 @@ describe('MulticastDNS', () => {
     this.timeout(40 * 1000)
 
     const mdnsA = mdns({
-      port: 50004, // port must be the same
-      compat: false
+      port: 50004 // port must be the same
     })(getComponents(pA, aMultiaddrs))
 
     const mdnsC = mdns({
-      port: 50004,
-      compat: false
+      port: 50004
     })(getComponents(pD, dMultiaddrs))
 
     await start(mdnsA)
@@ -204,14 +197,12 @@ describe('MulticastDNS', () => {
     const mdnsA = mdns({
       broadcast: false, // do not talk to ourself
       port: 50005,
-      ip: '224.0.0.252',
-      compat: false
+      ip: '224.0.0.252'
     })(getComponents(pA, aMultiaddrs))
 
     const mdnsB = mdns({
       port: 50005, // port must be the same
       ip: '224.0.0.252', // ip must be the same
-      compat: false
     })(getComponents(pB, bMultiaddrs))
 
     await start(mdnsA, mdnsB)

@@ -2,7 +2,6 @@ import multicastDNS from 'multicast-dns'
 import { CustomEvent, EventEmitter } from '@libp2p/interfaces/events'
 import { logger } from '@libp2p/logger'
 import * as query from './query.js'
-import { GoMulticastDNS } from './compat/index.js'
 import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interface-peer-discovery'
 import type { PeerInfo } from '@libp2p/interface-peer-info'
 import { symbol } from '@libp2p/interface-peer-discovery'
@@ -19,9 +18,6 @@ export interface MulticastDNSInit {
   peerName?: string
   port?: number
   ip?: string
-  compat?: boolean
-  compatQueryPeriod?: number
-  compatQueryInterval?: number
 }
 
 export interface MulticastDNSComponents {
@@ -39,7 +35,6 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
   private readonly port: number
   private readonly ip: string
   private _queryInterval: ReturnType<typeof setInterval> | null
-  private readonly _goMdns?: GoMulticastDNS
   private readonly components: MulticastDNSComponents
 
   constructor (components: MulticastDNSComponents, init: MulticastDNSInit = {}) {
@@ -60,14 +55,6 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
     this._onPeer = this._onPeer.bind(this)
     this._onMdnsQuery = this._onMdnsQuery.bind(this)
     this._onMdnsResponse = this._onMdnsResponse.bind(this)
-
-    if (init.compat !== false) {
-      this._goMdns = new GoMulticastDNS(components, {
-        queryPeriod: init.compatQueryPeriod,
-        queryInterval: init.compatQueryInterval
-      })
-      this._goMdns.addEventListener('peer', this._onPeer)
-    }
   }
 
   get [symbol] (): true {
@@ -97,10 +84,6 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
     this.mdns.on('response', this._onMdnsResponse)
 
     this._queryInterval = query.queryLAN(this.mdns, this.serviceTag, this.interval)
-
-    if (this._goMdns != null) {
-      await this._goMdns.start()
-    }
   }
 
   _onMdnsQuery (event: multicastDNS.QueryPacket) {
@@ -159,23 +142,19 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
 
     this.mdns.removeListener('query', this._onMdnsQuery)
     this.mdns.removeListener('response', this._onMdnsResponse)
-    this._goMdns?.removeEventListener('peer', this._onPeer)
 
     if (this._queryInterval != null) {
       clearInterval(this._queryInterval)
       this._queryInterval = null
     }
 
-    await Promise.all([
-      this._goMdns?.stop(),
-      new Promise<void>((resolve) => {
-        if (this.mdns != null) {
-          this.mdns.destroy(resolve)
-        } else {
-          resolve()
-        }
-      })
-    ])
+    await new Promise<void>((resolve) => {
+      if (this.mdns != null) {
+        this.mdns.destroy(resolve)
+      } else {
+        resolve()
+      }
+    })
 
     this.mdns = undefined
   }
