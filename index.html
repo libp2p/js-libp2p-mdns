@@ -1,319 +1,119 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset='utf-8'>
-  <title>libp2p-mdns 0.15.0 | Documentation</title>
-  <meta name='description' content='Node.js libp2p mDNS discovery implementation for peer discovery'>
-  <meta name='viewport' content='width=device-width,initial-scale=1'>
-  <link href='assets/bass.css' rel='stylesheet'>
-  <link href='assets/style.css' rel='stylesheet'>
-  <link href='assets/github.css' rel='stylesheet'>
-  <link href='assets/split.css' rel='stylesheet'>
-</head>
-<body class='documentation m0'>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'>libp2p-mdns</h3>
-          <div class='mb1'><code>0.15.0</code></div>
-          <input
-            placeholder='Filter'
-            id='filter-input'
-            class='col12 block input'
-            spellcheck='false'
-            autocapitalize='off'
-            autocorrect='off'
-            type='text' />
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
-              
-                
-                <li><a
-                  href='#start'
-                  class="">
-                  start
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#stop'
-                  class="">
-                  stop
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#periodically'
-                  class="">
-                  periodically
-                  
-                </a>
-                
-                </li>
-              
-            </ul>
-          </div>
-          <div class='mt1 h6 quiet'>
-            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
-          </div>
-        </div>
-      </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@libp2p/mdns - v5.1.0</title><meta name="description" content="Documentation for @libp2p/mdns - v5.1.0"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@libp2p/mdns - v5.1.0</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>@libp2p/mdns - v5.1.0</h2></div>
+<div class="tsd-panel tsd-typography">
+<a href="#libp2pmdns-" id="libp2pmdns-" style="color: inherit; text-decoration: none;">
+  <h1>@libp2p/mdns <!-- omit in toc --></h1>
+</a>
+<p><a href="http://libp2p.io/"><img src="https://img.shields.io/badge/project-libp2p-yellow.svg?style=flat-square" alt="libp2p.io"></a>
+<a href="https://discuss.libp2p.io"><img src="https://img.shields.io/discourse/https/discuss.libp2p.io/posts.svg?style=flat-square" alt="Discuss"></a>
+<a href="https://codecov.io/gh/libp2p/js-libp2p-mdns"><img src="https://img.shields.io/codecov/c/github/libp2p/js-libp2p-mdns.svg?style=flat-square" alt="codecov"></a>
+<a href="https://github.com/libp2p/js-libp2p-mdns/actions/workflows/js-test-and-release.yml?query=branch%3Amaster"><img src="https://img.shields.io/github/actions/workflow/status/libp2p/js-libp2p-mdns/js-test-and-release.yml?branch=master&style=flat-square" alt="CI"></a></p>
+<blockquote>
+<p>Node.js libp2p mDNS discovery implementation for peer discovery</p>
+</blockquote>
 
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='start'>
-      start
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/libp2p/js-libp2p-mdns/blob/ddcc10b669080430976404101be607f3af333fe1/src/index.js#L45-L57'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
+<a href="#table-of-contents-" id="table-of-contents-" style="color: inherit; text-decoration: none;">
+  <h2>Table of contents <!-- omit in toc --></h2>
+</a>
+<ul>
+<li><a href="#install">Install</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#mdns-messages">MDNS messages</a></li>
+<li><a href="#api-docs">API Docs</a></li>
+<li><a href="#license">License</a></li>
+<li><a href="#contribute">Contribute</a></li>
+</ul>
 
-  <p>Start sending queries to the LAN.</p>
+<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+  <h2>Install</h2>
+</a>
+<pre><code class="language-console">$ npm i @libp2p/mdns
+</code></pre>
 
-    <div class='pre p1 fill-light mt0'>start(): void</div>
-  
-  
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<pre><code class="language-JavaScript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">MDNS</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;@libp2p/mdns&#39;</span><br/><br/><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">mdns</span><span class="hl-1"> = </span><span class="hl-4">new</span><span class="hl-1"> </span><span class="hl-6">MDNS</span><span class="hl-1">(</span><span class="hl-2">options</span><span class="hl-1">)</span><br/><br/><span class="hl-2">mdns</span><span class="hl-1">.</span><span class="hl-6">on</span><span class="hl-1">(</span><span class="hl-3">&#39;peer&#39;</span><span class="hl-1">, (</span><span class="hl-2">peerData</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-2">console</span><span class="hl-1">.</span><span class="hl-6">log</span><span class="hl-1">(</span><span class="hl-3">&#39;Found a peer in the local network&#39;</span><span class="hl-1">, </span><span class="hl-2">peerData</span><span class="hl-1">.</span><span class="hl-2">id</span><span class="hl-1">.</span><span class="hl-6">toString</span><span class="hl-1">(), </span><span class="hl-2">peerData</span><span class="hl-1">.</span><span class="hl-2">multiaddrs</span><span class="hl-1">)</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-7">// Broadcast for 20 seconds</span><br/><span class="hl-2">mdns</span><span class="hl-1">.</span><span class="hl-6">start</span><span class="hl-1">()</span><br/><span class="hl-6">setTimeout</span><span class="hl-1">(() </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-2">mdns</span><span class="hl-1">.</span><span class="hl-6">stop</span><span class="hl-1">(), </span><span class="hl-8">20</span><span class="hl-1"> * </span><span class="hl-8">1000</span><span class="hl-1">)</span>
+</code></pre>
+<ul>
+<li>options<ul>
+<li><code>peerId</code> - PeerId to announce</li>
+<li><code>multiaddrs</code> - multiaddrs to announce</li>
+<li><code>broadcast</code> - (true/false) announce our presence through mDNS, default <code>false</code></li>
+<li><code>interval</code> - query interval, default 10 * 1000 (10 seconds)</li>
+<li><code>serviceTag</code> - name of the service announce , default &#39;ipfs.local`</li>
+<li><code>compat</code> - enable/disable compatibility with go-libp2p-mdns, default <code>true</code></li>
+</ul>
+</li>
+</ul>
 
-  
-  
-  
-  
-  
-  
+<a href="#mdns-messages" id="mdns-messages" style="color: inherit; text-decoration: none;">
+  <h2>MDNS messages</h2>
+</a>
+<p>A query is sent to discover the IPFS nodes on the local network</p>
+<pre><code class="language-js"><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-9">type</span><span class="hl-1">: </span><span class="hl-3">&#39;query&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-9">questions</span><span class="hl-1">: [ { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;ipfs.local&#39;</span><span class="hl-1">, </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;PTR&#39;</span><span class="hl-1"> } ]</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>When a query is detected, each IPFS node sends an answer about itself</p>
+<pre><code class="language-js"><span class="hl-1">    [ { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;ipfs.local&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;PTR&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">class:</span><span class="hl-1"> </span><span class="hl-3">&#39;IN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">ttl:</span><span class="hl-1"> </span><span class="hl-8">120</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">data:</span><span class="hl-1"> </span><span class="hl-3">&#39;QmNPubsDWATVngE3d5WDSNe7eVrFLuk38qb9t6vdLnu2aK.ipfs.local&#39;</span><span class="hl-1"> },</span><br/><span class="hl-1">      { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;QmNPubsDWATVngE3d5WDSNe7eVrFLuk38qb9t6vdLnu2aK.ipfs.local&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;SRV&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">class:</span><span class="hl-1"> </span><span class="hl-3">&#39;IN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">ttl:</span><span class="hl-1"> </span><span class="hl-8">120</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">data:</span><br/><span class="hl-1">         { </span><span class="hl-2">priority:</span><span class="hl-1"> </span><span class="hl-8">10</span><span class="hl-1">,</span><br/><span class="hl-1">           </span><span class="hl-2">weight:</span><span class="hl-1"> </span><span class="hl-8">1</span><span class="hl-1">,</span><br/><span class="hl-1">           </span><span class="hl-2">port:</span><span class="hl-1"> </span><span class="hl-3">&#39;20002&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">           </span><span class="hl-2">target:</span><span class="hl-1"> </span><span class="hl-3">&#39;LAPTOP-G5LJ7VN9&#39;</span><span class="hl-1"> } },</span><br/><span class="hl-1">      { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;QmNPubsDWATVngE3d5WDSNe7eVrFLuk38qb9t6vdLnu2aK.ipfs.local&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;TXT&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">class:</span><span class="hl-1"> </span><span class="hl-3">&#39;IN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">ttl:</span><span class="hl-1"> </span><span class="hl-8">120</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">data:</span><span class="hl-1"> [</span><span class="hl-3">&#39;QmNPubsDWATVngE3d5WDSNe7eVrFLuk38qb9t6vdLnu2aK&#39;</span><span class="hl-1">] },</span><br/><span class="hl-1">      { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;LAPTOP-G5LJ7VN9&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;A&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">class:</span><span class="hl-1"> </span><span class="hl-3">&#39;IN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">ttl:</span><span class="hl-1"> </span><span class="hl-8">120</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">data:</span><span class="hl-1"> </span><span class="hl-3">&#39;127.0.0.1&#39;</span><span class="hl-1"> },</span><br/><span class="hl-1">      { </span><span class="hl-2">name:</span><span class="hl-1"> </span><span class="hl-3">&#39;LAPTOP-G5LJ7VN9&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">type:</span><span class="hl-1"> </span><span class="hl-3">&#39;AAAA&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">class:</span><span class="hl-1"> </span><span class="hl-3">&#39;IN&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">ttl:</span><span class="hl-1"> </span><span class="hl-8">120</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">data:</span><span class="hl-1"> </span><span class="hl-3">&#39;::1&#39;</span><span class="hl-1"> } ]</span>
+</code></pre>
 
-  
+<a href="#api-docs" id="api-docs" style="color: inherit; text-decoration: none;">
+  <h2>API Docs</h2>
+</a>
+<ul>
+<li><a href="https://libp2p.github.io/js-libp2p-mdns">https://libp2p.github.io/js-libp2p-mdns</a></li>
+</ul>
 
-  
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p>Licensed under either of</p>
+<ul>
+<li>Apache 2.0, (<a href="LICENSE-APACHE">LICENSE-APACHE</a> / <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>)</li>
+<li>MIT (<a href="LICENSE-MIT">LICENSE-MIT</a> / <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</li>
+</ul>
 
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='stop'>
-      stop
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/libp2p/js-libp2p-mdns/blob/ddcc10b669080430976404101be607f3af333fe1/src/index.js#L84-L102'>
-      <span>src/index.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Stop sending queries to the LAN.</p>
-
-    <div class='pre p1 fill-light mt0'>stop(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></code>:
-        
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='periodically'>
-      periodically
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/libp2p/js-libp2p-mdns/blob/ddcc10b669080430976404101be607f3af333fe1/src/compat/querier.js#L136-L162'>
-      <span>src/compat/querier.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>Run <code>fn</code> for a certain period of time, and then wait for an interval before
-running it again. <code>fn</code> must return an object with a stop function, which is
-called when the period expires.</p>
-
-    <div class='pre p1 fill-light mt0'>periodically(fn: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>fn</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>)</code>
-	    function to run
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.period</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?</code>
-  </td>
-  <td class='break-word'><span>Period in ms to run the function for
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>options.interval</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?</code>
-  </td>
-  <td class='break-word'><span>Interval in ms between runs
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
-        handle that can be used to stop execution
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-      </div>
-    </div>
-  <script src='assets/anchor.js'></script>
-  <script src='assets/split.js'></script>
-  <script src='assets/site.js'></script>
-</body>
-</html>
+<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
+  <h2>Contribute</h2>
+</a>
+<p>Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.</p>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">@libp2p/mdns -<wbr/> v5.1.0</a>
+<ul></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="tsd-kind-interface"><a href="interfaces/MulticastDNSComponents.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg>MulticastDNSComponents</a></li>
+<li class="tsd-kind-interface"><a href="interfaces/MulticastDNSInit.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-256-path"></use><use href="#icon-256-text"></use></svg>MulticastDNSInit</a></li>
+<li class="tsd-kind-function"><a href="functions/mdns.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-function)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-64-path"></rect><path d="M9.39 16V7.24H14.55V8.224H10.446V11.128H14.238V12.112H10.47V16H9.39Z" fill="var(--color-text)" id="icon-64-text"></path></svg>mdns</a></li></ul></nav></div></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>
