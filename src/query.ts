@@ -7,8 +7,8 @@ import type { MulticastDNS, QueryPacket, ResponsePacket } from 'multicast-dns'
 
 const log = logger('libp2p:mdns:query')
 
-export function queryLAN (mdns: MulticastDNS, serviceTag: string, interval: number) {
-  const query = () => {
+export function queryLAN (mdns: MulticastDNS, serviceTag: string, interval: number): NodeJS.Timer {
+  const query = (): void => {
     log('query', serviceTag)
 
     mdns.query({
@@ -71,7 +71,7 @@ export function gotResponse (rsp: ResponsePacket, localPeerName: string, service
   }
 }
 
-export function gotQuery (qry: QueryPacket, mdns: MulticastDNS, peerName: string, multiaddrs: Multiaddr[], serviceTag: string, broadcast: boolean) {
+export function gotQuery (qry: QueryPacket, mdns: MulticastDNS, peerName: string, multiaddrs: Multiaddr[], serviceTag: string, broadcast: boolean): void {
   if (!broadcast) {
     log('not responding to mDNS query as broadcast mode is false')
     return

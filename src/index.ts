@@ -61,11 +61,11 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
     return true
   }
 
-  get [Symbol.toStringTag] () {
+  get [Symbol.toStringTag] (): '@libp2p/mdns' {
     return '@libp2p/mdns'
   }
 
-  isStarted () {
+  isStarted (): boolean {
     return Boolean(this.mdns)
   }
 
@@ -74,7 +74,7 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
    *
    * @returns {void}
    */
-  async start () {
+  async start (): Promise<void> {
     if (this.mdns != null) {
       return
     }
@@ -86,7 +86,7 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
     this._queryInterval = query.queryLAN(this.mdns, this.serviceTag, this.interval)
   }
 
-  _onMdnsQuery (event: multicastDNS.QueryPacket) {
+  _onMdnsQuery (event: multicastDNS.QueryPacket): void {
     if (this.mdns == null) {
       return
     }
@@ -102,7 +102,7 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
       this.broadcast)
   }
 
-  _onMdnsResponse (event: multicastDNS.ResponsePacket) {
+  _onMdnsResponse (event: multicastDNS.ResponsePacket): void {
     log.trace('received mDNS query response')
 
     try {
@@ -120,7 +120,7 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
     }
   }
 
-  _onPeer (evt: CustomEvent<PeerInfo>) {
+  _onPeer (evt: CustomEvent<PeerInfo>): void {
     if (this.mdns == null) {
       return
     }
@@ -135,7 +135,7 @@ class MulticastDNS extends EventEmitter<PeerDiscoveryEvents> implements PeerDisc
    *
    * @returns {Promise}
    */
-  async stop () {
+  async stop (): Promise<void> {
     if (this.mdns == null) {
       return
     }
