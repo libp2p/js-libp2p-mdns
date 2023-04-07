@@ -14,7 +14,7 @@ import { start, stop } from '@libp2p/interfaces/startable'
 
 function getComponents (peerId: PeerId, multiaddrs: Multiaddr[]): { peerId: PeerId, addressManager: StubbedInstance<AddressManager> } {
   const addressManager = stubInterface<AddressManager>()
-  addressManager.getAddresses.returns(multiaddrs)
+  addressManager.getAddresses.returns(multiaddrs.map(ma => ma.encapsulate(`/p2p/${peerId.toString()}`)))
 
   return { peerId, addressManager }
 }
