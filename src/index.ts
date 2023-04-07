@@ -6,7 +6,6 @@ import type { PeerDiscovery, PeerDiscoveryEvents } from '@libp2p/interface-peer-
 import type { PeerInfo } from '@libp2p/interface-peer-info'
 import { symbol } from '@libp2p/interface-peer-discovery'
 import { stringGen } from './utils.js'
-import type { PeerId } from '@libp2p/interface-peer-id'
 import type { AddressManager } from '@libp2p/interface-address-manager'
 
 const log = logger('libp2p:mdns')
@@ -21,7 +20,6 @@ export interface MulticastDNSInit {
 }
 
 export interface MulticastDNSComponents {
-  peerId: PeerId
   addressManager: AddressManager
 }
 
